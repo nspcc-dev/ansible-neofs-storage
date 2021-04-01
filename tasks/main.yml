@@ -1,0 +1,105 @@
+---
+
+# Prepare system
+- name: Ensure there is neofs group
+  ansible.builtin.group:
+    name: "{{ neofs_storage__group }}"
+    system: True
+    state: 'present'
+
+- name: Ensure there is neofs user
+  ansible.builtin.user:
+    name: "{{ neofs_storage__user }}"
+    group: "{{ neofs_storage__group }}"
+    password: !
+    shell: /usr/sbin/nologin
+    home: "{{ neofs_storage__data_dir }}"
+    system: True
+    state: 'present'
+
+- name: Ensure configuration directory exists
+  ansible.builtin.file:
+    state: directory
+    path: "{{ item }}"
+    owner: "root"
+    group: "{{ neofs_storage__group }}"
+    mode: '0750'
+  with_items:
+    - "{{ neofs_storage__conf_dir }}"
+
+- name: Ensure data directory exists
+  ansible.builtin.file:
+    state: directory
+    path: "{{ item }}"
+    owner: "{{ neofs_storage__user }}"
+    group: "{{ neofs_storage__group }}"
+    mode: '0750'
+  with_items:
+    - "{{ neofs_storage__data_dir }}"
+
+- include: prepare_key.yml
+
+- name: Prepare NeoFS Storage config
+  ansible.builtin.template:
+    src: 'config.yaml.j2'
+    dest: "{{ neofs_storage__conf_dir }}/config.yaml"
+    owner: 'root'
+    group: "{{ neofs_storage__group }}"
+    mode: '0640'
+  notify:
+    - Restart neofs-storage service
+
+- include: download_binary.yml
+  when: not (neofs_storage__use_compose | bool)
+
+- name: Get uid for neofs-storage user
+  ansible.builtin.getent:
+    database: passwd
+    key: "{{ neofs_storage__user }}"
+
+- name: Get gid for neofs-storage user
+  ansible.builtin.getent:
+    database: group
+    key: "{{ neofs_storage__group }}"
+
+- name: Prepare docker-compose for neofs-ir
+  ansible.builtin.template:
+    src: 'docker-compose.yml.j2'
+    dest: "{{ neofs_storage__conf_dir }}/docker-compose.yml"
+    owner: 'root'
+    group: "{{ neofs_storage__group }}"
+    mode: '0640'
+  when: neofs_storage__use_compose | bool
+  notify:
+    - Restart neofs-storage service
+
+- name: Copy regular systemd unit file
+  ansible.builtin.template:
+    src: "neofs-storage.service.bin.j2"
+    dest: "/etc/systemd/system/neofs-storage{{ neofs_storage__instance }}.service"
+  when: not (neofs_storage__use_compose | bool)
+  notify:
+    - Restart neofs-storage service
+
+- name: Copy Docker systemd unit file
+  ansible.builtin.template:
+    src: "neofs-storage.service.compose.j2"
+    dest: "/etc/systemd/system/neofs-storage{{ neofs_storage__instance }}.service"
+  when: neofs_storage__use_compose | bool
+  notify:
+    - Restart neofs-storage service
+
+- name: Ensure NeoFS Storage service runs
+  ansible.builtin.systemd:
+    name: "neofs-storage{{ neofs_storage__instance }}.service"
+    state: 'started'
+    enabled: yes
+    daemon_reload: yes
+
+- name: Force debops.ferm run
+  include_role:
+    name: debops.debops.ferm
+  vars:
+    ferm__dependent_rules:
+      - "{{ neofs_storage__ferm__dependent_rules }}"
+  when: neofs_storage__debops_ferm_import | bool

@@ -1,0 +1,12 @@
+---
+
+# TODO: Check if the existing binary matches the remote file and update if
+# necessary.
+- name: Download neofs-storage binary
+  ansible.builtin.unarchive:
+    src: "{{ neofs_storage__bin_url }}"
+    remote_src: yes
+    dest: "{{ neofs_storage__bin_path | dirname }}"
+    owner: 'root'
+    group: 'root'
+    mode: '0755'

@@ -1,0 +1,18 @@
+[Unit]
+Description=NeoFS InnerRing{{ neofs_storage__instance }} node
+Requires=network.target
+
+[Service]
+Type=simple
+ExecStart={{ neofs_storage__bin_path }} -config {{ neofs_storage__conf_dir }}/config.yaml
+User={{ neofs_storage__user }}
+Group={{ neofs_storage__group }}
+Restart=always
+RestartSec=5
+StandardError=syslog
+SyslogIdentifier=neofs-storage{{ neofs_storage__instance }}
+PrivateTmp=true
+WorkingDirectory={{ neofs_storage__data_dir }}
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,17 @@
+# {{ ansible_managed }}
+
+version: '2.4'
+
+services:
+  neofs-storage{{ neofs_storage__instance }}:
+    image: {{ neofs_storage__docker_image }}
+    container_name: neofs-storage{{ neofs_storage__instance }}
+    hostname: neofs-storage{{ neofs_storage__instance }}
+    network_mode: host
+    stop_signal: SIGKILL
+    user: "{{ getent_passwd[neofs_storage__user][1] }}:{{ getent_group[neofs_storage__user][1] }}"
+    entrypoint: /bin/neofs-node
+    command: -config {{ neofs_storage__conf_dir }}/config.yaml
+    volumes:
+    - {{ neofs_storage__data_dir }}:{{ neofs_storage__data_dir }}
+    - {{ neofs_storage__conf_dir }}:{{ neofs_storage__conf_dir }}

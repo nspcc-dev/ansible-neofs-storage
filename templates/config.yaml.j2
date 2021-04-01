@@ -1,0 +1,61 @@
+morph:
+  rpc_endpoint:
+{% for endpoint in neofs_storage__morph_rpc %}
+    - {{ endpoint }}
+{% endfor %}
+
+  notification_endpoint:
+{% for endpoint in neofs_storage__morph_notification %}
+    - {{ endpoint }}
+{% endfor %}
+  dial_timeout: 20s
+
+node:
+  key: {{ neofs_storage__key_path }}
+  address: {{ neofs_storage__announce_address }}
+{% for attr in neofs_storage__attributes %}
+  attribute_{{ loop.index - 1 }}: {{ attr }}:{{ neofs_storage__attributes[attr] }}
+{% endfor %}
+
+grpc:
+  endpoint: {{ neofs_storage__grpc_address }}:{{ neofs_storage__grpc_port }}
+
+{% for contract in neofs_storage__contracts %}
+{{ contract }}:
+  scripthash: {{ neofs_storage__contracts[contract] }}
+{% endfor %}
+
+bootstrap:
+  periodic:
+    enabled: true
+
+logger:
+  level: debug
+
+metrics:
+  enabled: {{ neofs_storage__prometheus_enabled }}
+  address: {{ neofs_storage__prometheus_address }}:{{ neofs_storage__prometheus_port }}
+
+pprof:
+  enabled: {{ neofs_storage__pprof_enabled }}
+  address: {{ neofs_storage__pprof_address }}:{{ neofs_storage__pprof_port }}
+
+storage:
+  shard:
+{% for shard in neofs_storage__shards %}
+    {{ loop.index - 1 }}:
+      use_write_cache: false
+      metabase:
+        path: {{ shard['metabase']['path'] }}
+        perm: {{ shard['metabase']['perm'] }}
+      blobstor:
+        path: {{ shard['blobstor']['path'] }}
+        perm: {{ shard['blobstor']['perm'] }}
+        blobovnicza:
+          opened_cache_size: {{ shard['blobovnicza']['opened_cache_size'] }}
+          shallow_depth: {{ shard['blobovnicza']['shallow_depth'] }}
+          shallow_width: {{ shard['blobovnicza']['shallow_width'] }}
+      gc:
+        remover_batch_size: {{ shard['gc']['remover_batch_size'] }}
+        remover_sleep_interval: {{ shard['gc']['remover_sleep_interval'] }}
+{% endfor %}

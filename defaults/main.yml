@@ -1,0 +1,128 @@
+---
+
+# User and group for NeoFS to run and own files
+neofs_storage__user: "neofs-storage{{ neofs_storage__instance }}"
+neofs_storage__group: "neofs-storage{{ neofs_storage__instance }}"
+
+# Instance name to have multiple NeoFS nodes on the same host
+neofs_storage__instance: ''
+
+# Directory for configuration files and keys
+neofs_storage__conf_dir: "/etc/neofs/storage{{ neofs_storage__instance }}"
+
+# Directory for databases and processing results
+neofs_storage__data_dir: "/var/lib/neofs/neofs-storage{{ neofs_storage__instance }}"
+
+neofs_storage__shards:
+  - metabase:
+      path: "{{ neofs_storage__data_dir}}/metabase.db"
+      perm: 0640
+    blobstor:
+      path: "{{ neofs_storage__data_dir}}/data"
+      perm: 0750
+    blobovnicza:
+      opened_cache_size: 32
+      shallow_depth: 1
+      shallow_width: 1
+    gc:
+      remover_batch_size: 100
+      remover_sleep_interval: 1m
+
+neofs_storage__key_path: "{{ neofs_storage__conf_dir }}/node.key"
+
+# Default bind address
+neofs_storage__bind_address: '0.0.0.0'
+neofs_storage__announce_address: "{{ neofs_storage__grpc_address }}:{{ neofs_storage__grpc_port }}"
+
+neofs_storage__morph_rpc:
+  - 'https://rpc1.morph.fs.neo.org:40341'
+  - 'https://rpc2.morph.fs.neo.org:40341'
+  - 'https://rpc3.morph.fs.neo.org:40341'
+  - 'https://rpc4.morph.fs.neo.org:40341'
+  - 'https://rpc5.morph.fs.neo.org:40341'
+  - 'https://rpc6.morph.fs.neo.org:40341'
+  - 'https://rpc7.morph.fs.neo.org:40341'
+
+neofs_storage__morph_notification:
+  - 'wss://rpc1.morph.fs.neo.org:40341/ws'
+  - 'wss://rpc2.morph.fs.neo.org:40341/ws'
+  - 'wss://rpc3.morph.fs.neo.org:40341/ws'
+  - 'wss://rpc4.morph.fs.neo.org:40341/ws'
+  - 'wss://rpc5.morph.fs.neo.org:40341/ws'
+  - 'wss://rpc6.morph.fs.neo.org:40341/ws'
+  - 'wss://rpc7.morph.fs.neo.org:40341/ws'
+
+neofs_storage__contracts:
+  netmap: '600270a6fd666dc137fa3e62c9d2606b75aeb298'
+  balance: '2835a2d2a28ffc8866840df7aafda5780c7514a3'
+  container: '08ebc0b968cdce2851f1a1d2fe9340e77b1f0f6c'
+  neofs: '37a32e1bf20ed5141bc5748892a82f14e75a8e22'
+  audit: '27571287757e0e9809d01799c9f049a8ae5952ce'
+  proxy: 'dedf58b489e5af01a1a2089393102d46d74806ac'
+
+neofs_storage__attributes: []
+
+# Ports and options for each service
+neofs_storage__grpc_port: '8080'
+neofs_storage__grpc_address: '{{ neofs_storage__bind_address }}'
+neofs_storage__grpc_allow: []
+neofs_storage__grpc_group_allow: []
+neofs_storage__grpc_host_allow: []
+
+neofs_storage__prometheus_enabled: False
+neofs_storage__prometheus_port: '6662'
+neofs_storage__prometheus_address: '{{ neofs_storage__bind_address }}'
+neofs_storage__prometheus_allow: []
+neofs_storage__prometheus_group_allow: []
+neofs_storage__prometheus_host_allow: []
+
+neofs_storage__pprof_enabled: False
+neofs_storage__pprof_port: '6661'
+neofs_storage__pprof_address: '{{ neofs_storage__bind_address }}'
+neofs_storage__pprof_allow: []
+neofs_storage__pprof_group_allow: []
+neofs_storage__pprof_host_allow: []
+
+# NeoFS options
+neofs_storage__version: '0.18.0'
+neofs_storage__docker_image: "nspccdev/neofs-ir:{{ neofs_storage__version }}"
+neofs_storage__bin_url: "https://github.com/nspcc-dev/neofs-node/releases/download/v{{ neofs_storage__version }}/neofs-storage-linux-amd64.tar.gz"
+neofs_storage__bin_path: '/usr/local/bin/neofs-node'
+
+# Systemd unit may use docker compose to run NeoFS IR in container, instead of
+# local binary.
+neofs_storage__use_compose: False
+
+# Force debops.ferm run via role import
+# May be useful when you need to have multiple instances with different
+# firewall rules for each one.
+neofs_storage__debops_ferm_import: False
+
+# firewall configuration to be applied with debops.ferm role
+neofs_storage__ferm__dependent_rules:
+  - type: 'accept'
+    name: "neofs-storage{{ neofs_storage__instance }}_grpc"
+    dport: [ '{{ neofs_storage__grpc_port }}' ]
+    daddr: [ '{{ neofs_storage__grpc_address }}' ]
+    saddr: '{{ neofs_storage__grpc_allow + neofs_storage__grpc_group_allow + neofs_storage__grpc_host_allow }}'
+    protocol: 'tcp'
+    role: 'neofs-storage'
+    rule_state: 'present'
+
+  - type: 'accept'
+    name: "neofs-storage{{ neofs_storage__instance }}_prometheus"
+    dport: [ '{{ neofs_storage__prometheus_port }}' ]
+    daddr: [ '{{ neofs_storage__prometheus_address }}' ]
+    saddr: '{{ neofs_storage__prometheus_allow + neofs_storage__prometheus_group_allow + neofs_storage__prometheus_host_allow }}'
+    protocol: 'tcp'
+    role: 'neofs-storage'
+    rule_state: "{{ 'present' if neofs_storage__prometheus_enabled else 'absent' }}"
+
+  - type: 'accept'
+    name: "neofs-storage{{ neofs_storage__instance }}_pprof"
+    dport: [ '{{ neofs_storage__pprof_port }}' ]
+    daddr: [ '{{ neofs_storage__pprof_address }}' ]
+    saddr: '{{ neofs_storage__pprof_allow + neofs_storage__pprof_group_allow + neofs_storage__pprof_host_allow }}'
+    protocol: 'tcp'
+    role: 'neofs-storage'
+    rule_state: "{{ 'present' if neofs_storage__pprof_enabled else 'absent' }}"

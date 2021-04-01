@@ -1,0 +1,14 @@
+[Unit]
+Description=NeoFS Storage{{ neofs_storage__instance }} node in Docker
+Requires=docker.service
+After=docker.service
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/docker-compose up
+ExecStop=/usr/bin/docker-compose down
+Restart=always
+WorkingDirectory={{ neofs_storage__conf_dir }}
+
+[Install]
+WantedBy=multi-user.target
