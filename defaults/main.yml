@@ -28,6 +28,9 @@ neofs_storage__shards:
       remover_batch_size: 100
       remover_sleep_interval: 1m
 
+# Local path to key
+neofs_storage__key: "node.key"
+# Path to key on the remote host
 neofs_storage__key_path: "{{ neofs_storage__conf_dir }}/node.key"
 
 # Default bind address
