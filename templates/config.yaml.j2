@@ -44,7 +44,16 @@ storage:
   shard:
 {% for shard in neofs_storage__shards %}
     {{ loop.index - 1 }}:
-      use_write_cache: false
+      {% if shard['write_cache']['enabled'] %}
+      use_write_cache: true
+      writecache:
+        path: {{ shard['write_cache']['path'] }}
+        mem_size: {{ shard['write_cache']['mem_size'] }}
+        db_size: {{ shard['write_cache']['db_size'] }}
+        small_size: {{ shard['write_cache']['small_size'] }}
+        max_size: {{ shard['write_cache']['max_size'] }}
+        workers_count: {{ shard['write_cache']['workers_count'] }}
+      {% endif %}
       metabase:
         path: {{ shard['metabase']['path'] }}
         perm: {{ shard['metabase']['perm'] }}
@@ -59,3 +68,18 @@ storage:
         remover_batch_size: {{ shard['gc']['remover_batch_size'] }}
         remover_sleep_interval: {{ shard['gc']['remover_sleep_interval'] }}
 {% endfor %}
+
+pool:
+  object:
+    put:
+      size: {{ neofs_storage__put_pool }}
+    get:
+      size: {{ neofs_storage__get_pool }}
+    head:
+      size: {{ neofs_storage__head_pool }}
+    search:
+      size: {{ neofs_storage__search_pool }}
+    range:
+      size: {{ neofs_storage__put_pool }}
+    rangehash:
+      size: {{ neofs_storage__put_pool }}

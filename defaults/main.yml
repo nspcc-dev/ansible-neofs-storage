@@ -27,6 +27,22 @@ neofs_storage__shards:
     gc:
       remover_batch_size: 100
       remover_sleep_interval: 1m
+    write_cache:
+      enabled: False
+      path: "{{ neofs_storage__data_dir}}/write_cache"
+      mem_size: 1073741824
+      db_size: 0
+      small_size: 32768
+      max_size: 67108864
+      workers_count: 20
+
+# Worker pool configuration
+neofs_storage__put_pool: 100
+neofs_storage__get_pool: 100
+neofs_storage__head_pool: 100
+neofs_storage__search_pool: 100
+neofs_storage__range_pool: 100
+neofs_storage__rangehash_pool: 100
 
 # Local path to key
 neofs_storage__key: "node.key"
