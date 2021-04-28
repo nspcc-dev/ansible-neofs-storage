@@ -44,7 +44,7 @@ storage:
   shard:
 {% for shard in neofs_storage__shards %}
     {{ loop.index - 1 }}:
-      {% if shard['write_cache']['enabled'] %}
+{% if shard['write_cache']['enabled'] %}
       use_write_cache: true
       writecache:
         path: {{ shard['write_cache']['path'] }}
@@ -53,7 +53,7 @@ storage:
         small_size: {{ shard['write_cache']['small_size'] }}
         max_size: {{ shard['write_cache']['max_size'] }}
         workers_count: {{ shard['write_cache']['workers_count'] }}
-      {% endif %}
+{% endif %}
       metabase:
         path: {{ shard['metabase']['path'] }}
         perm: {{ shard['metabase']['perm'] }}
