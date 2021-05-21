@@ -25,19 +25,13 @@ grpc:
   scripthash: {{ neofs_storage__contracts[contract] }}
 {% endfor %}
 
-bootstrap:
-  periodic:
-    enabled: true
-
 logger:
   level: debug
 
 metrics:
-  enabled: {{ neofs_storage__prometheus_enabled }}
   address: {{ neofs_storage__prometheus_address }}:{{ neofs_storage__prometheus_port }}
 
 pprof:
-  enabled: {{ neofs_storage__pprof_enabled }}
   address: {{ neofs_storage__pprof_address }}:{{ neofs_storage__pprof_port }}
 
 storage:
