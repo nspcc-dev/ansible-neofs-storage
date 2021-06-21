@@ -20,9 +20,9 @@ node:
 grpc:
   endpoint: {{ neofs_storage__grpc_address }}:{{ neofs_storage__grpc_port }}
 
+contracts:
 {% for contract in neofs_storage__contracts %}
-{{ contract }}:
-  scripthash: {{ neofs_storage__contracts[contract] }}
+  {{ contract }}: {{ neofs_storage__contracts[contract] }}
 {% endfor %}
 
 logger:
@@ -35,11 +35,12 @@ pprof:
   address: {{ neofs_storage__pprof_address }}:{{ neofs_storage__pprof_port }}
 
 storage:
+  shard_num: {{ neofs_storage__shards|length }}
   shard:
 {% for shard in neofs_storage__shards %}
     {{ loop.index - 1 }}:
+      use_write_cache: {{ shard['write_cache']['enabled'] }}
 {% if shard['write_cache']['enabled'] %}
-      use_write_cache: true
       writecache:
         path: {{ shard['write_cache']['path'] }}
         mem_size: {{ shard['write_cache']['mem_size'] }}
@@ -63,17 +64,16 @@ storage:
         remover_sleep_interval: {{ shard['gc']['remover_sleep_interval'] }}
 {% endfor %}
 
-pool:
-  object:
-    put:
-      size: {{ neofs_storage__put_pool }}
-    get:
-      size: {{ neofs_storage__get_pool }}
-    head:
-      size: {{ neofs_storage__head_pool }}
-    search:
-      size: {{ neofs_storage__search_pool }}
-    range:
-      size: {{ neofs_storage__put_pool }}
-    rangehash:
-      size: {{ neofs_storage__put_pool }}
+object:
+  put:
+    pool_size: {{ neofs_storage__put_pool }}
+  get:
+    pool_size: {{ neofs_storage__get_pool }}
+  head:
+    pool_size: {{ neofs_storage__head_pool }}
+  search:
+    pool_size: {{ neofs_storage__search_pool }}
+  range:
+    pool_size: {{ neofs_storage__put_pool }}
+  rangehash:
+    pool_size: {{ neofs_storage__put_pool }}
