@@ -7,5 +7,3 @@
     owner: 'root'
     group: "{{ neofs_storage__group }}"
     mode: '0640'
-    notify:
-      - Restart neofs-storage service
