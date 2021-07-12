@@ -49,9 +49,26 @@ neofs_storage__key: "node.key"
 # Path to key on the remote host
 neofs_storage__key_path: "{{ neofs_storage__conf_dir }}/node.key"
 
+# Local path to wallet
+neofs_storage__wallet: "wallet.json"
+# Path to wallet on the remote host
+neofs_storage__wallet_path: "{{ neofs_storage__conf_dir }}/wallet.json"
+neofs_storage__wallet_addr: ""
+neofs_storage__wallet_passwd: '""'
+
 # Default bind address
 neofs_storage__bind_address: '0.0.0.0'
-neofs_storage__announce_address: "{{ neofs_storage__grpc_address }}:{{ neofs_storage__grpc_port }}"
+neofs_storage__announce_address:
+  - "{{ neofs_storage__grpc_address }}:{{ neofs_storage__grpc_port }}"
+
+neofs_storage__tls_enabled: False
+neofs_storage__tls_endpoint: "{{ neofs_storage__grpc_address }}:{{ neofs_storage__grpcs_port }}"
+# Local paths to TLS certificate and key
+neofs_storage__tls_cert_path: "/path/to/cert"
+neofs_storage__tls_key_path: "/path/to/key"
+# Remote paths to TLS certificate and key
+neofs_storage__tls_cert: "{{ neofs_storage__conf_dir }}/tls.cert"
+neofs_storage__tls_key: "{{ neofs_storage__conf_dir }}/tls.key"
 
 neofs_storage__morph_rpc:
   - 'https://rpc1.morph.fs.neo.org:40341'
@@ -83,6 +100,7 @@ neofs_storage__attributes: []
 
 # Ports and options for each service
 neofs_storage__grpc_port: '8080'
+neofs_storage__grpcs_port: '8082'
 neofs_storage__grpc_address: '{{ neofs_storage__bind_address }}'
 neofs_storage__grpc_allow: []
 neofs_storage__grpc_group_allow: []
@@ -105,7 +123,7 @@ neofs_storage__pprof_host_allow: []
 # NeoFS options
 neofs_storage__version: '0.18.0'
 neofs_storage__docker_image: "nspccdev/neofs-ir:{{ neofs_storage__version }}"
-neofs_storage__bin_url: "https://github.com/nspcc-dev/neofs-node/releases/download/v{{ neofs_storage__version }}/neofs-storage-linux-amd64"
+neofs_storage__bin_url: "https://github.com/nspcc-dev/neofs-node/releases/download/v{{ neofs_storage__version }}/neofs-node-v{{ neofs_storage__version }}-amd64"
 neofs_storage__bin_path: '/usr/local/bin/neofs-node'
 
 # Systemd unit may use docker compose to run NeoFS IR in container, instead of
@@ -122,6 +140,15 @@ neofs_storage__ferm__dependent_rules:
   - type: 'accept'
     name: "neofs-storage{{ neofs_storage__instance }}_grpc"
     dport: [ '{{ neofs_storage__grpc_port }}' ]
+    daddr: [ '{{ neofs_storage__grpc_address }}' ]
+    saddr: '{{ neofs_storage__grpc_allow + neofs_storage__grpc_group_allow + neofs_storage__grpc_host_allow }}'
+    protocol: 'tcp'
+    role: 'neofs-storage'
+    rule_state: 'present'
+
+  - type: 'accept'
+    name: "neofs-storage{{ neofs_storage__instance }}_grpcs"
+    dport: [ '{{ neofs_storage__grpcs_port }}' ]
     daddr: [ '{{ neofs_storage__grpc_address }}' ]
     saddr: '{{ neofs_storage__grpc_allow + neofs_storage__grpc_group_allow + neofs_storage__grpc_host_allow }}'
     protocol: 'tcp'

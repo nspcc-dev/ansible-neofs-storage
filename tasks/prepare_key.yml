@@ -7,3 +7,29 @@
     owner: 'root'
     group: "{{ neofs_storage__group }}"
     mode: '0640'
+
+- name: Ensure there is node wallet
+  ansible.builtin.copy:
+    content: "{{ neofs_storage__wallet }}"
+    dest: "{{ neofs_storage__wallet_path }}"
+    owner: 'root'
+    group: "{{ neofs_storage__group }}"
+    mode: '0640'
+
+- name: Ensure there is TLS certificate
+  ansible.builtin.copy:
+    content: "{{ neofs_storage__tls_cert_path }}"
+    dest: "{{ neofs_storage__tls_cert }}"
+    owner: 'root'
+    group: "{{ neofs_storage__group }}"
+    mode: '0640'
+  when: neofs_storage__tls_enabled
+
+- name: Ensure there is TLS key
+  ansible.builtin.copy:
+    content: "{{ neofs_storage__tls_key_path }}"
+    dest: "{{ neofs_storage__tls_key }}"
+    owner: 'root'
+    group: "{{ neofs_storage__group }}"
+    mode: '0640'
+  when: neofs_storage__tls_enabled
