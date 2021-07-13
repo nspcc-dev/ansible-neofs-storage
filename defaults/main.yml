@@ -44,11 +44,6 @@ neofs_storage__search_pool: 100
 neofs_storage__range_pool: 100
 neofs_storage__rangehash_pool: 100
 
-# Local path to key
-neofs_storage__key: "node.key"
-# Path to key on the remote host
-neofs_storage__key_path: "{{ neofs_storage__conf_dir }}/node.key"
-
 # Local path to wallet
 neofs_storage__wallet: "wallet.json"
 # Path to wallet on the remote host
