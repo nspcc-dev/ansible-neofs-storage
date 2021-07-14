@@ -103,7 +103,7 @@ neofs_storage__grpc_host_allow: []
 
 neofs_storage__prometheus_enabled: False
 neofs_storage__prometheus_port: '6662'
-neofs_storage__prometheus_address: '{{ neofs_storage__bind_address }}'
+neofs_storage__prometheus_address: 'localhost'
 neofs_storage__prometheus_allow: []
 neofs_storage__prometheus_group_allow: []
 neofs_storage__prometheus_host_allow: []
