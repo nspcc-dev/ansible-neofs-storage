@@ -116,9 +116,9 @@ neofs_storage__pprof_group_allow: []
 neofs_storage__pprof_host_allow: []
 
 # NeoFS options
-neofs_storage__version: '0.18.0'
+neofs_storage__version: '0.23.1'
 neofs_storage__docker_image: "nspccdev/neofs-ir:{{ neofs_storage__version }}"
-neofs_storage__bin_url: "https://github.com/nspcc-dev/neofs-node/releases/download/v{{ neofs_storage__version }}/neofs-node-v{{ neofs_storage__version }}-amd64"
+neofs_storage__bin_url: "https://github.com/nspcc-dev/neofs-node/releases/download/v{{ neofs_storage__version }}/neofs-node-amd64"
 neofs_storage__bin_path: '/usr/local/bin/neofs-node'
 
 # Systemd unit may use docker compose to run NeoFS IR in container, instead of
