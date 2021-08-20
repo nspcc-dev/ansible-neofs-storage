@@ -38,6 +38,16 @@ grpc:
       key: {{ neofs_storage__tls_key }}
 {% endif %}
 
+{% if neofs_storage__control_enabled %}
+control:
+  authorized_keys:
+{% for authorized_key in neofs_storage__control_authorized_keys %}
+    - {{ authorized_key }}
+{% endfor %}
+  grpc:
+    endpoint: {{ neofs_storage__control_endpoint }}
+{% endif %}
+
 contracts:
 {% for contract in neofs_storage__contracts %}
   {{ contract }}: {{ neofs_storage__contracts[contract] }}

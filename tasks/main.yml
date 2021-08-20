@@ -23,7 +23,7 @@
     path: "{{ item }}"
     owner: "root"
     group: "{{ neofs_storage__group }}"
-    mode: '0750'
+    mode: '0755'
   with_items:
     - "{{ neofs_storage__conf_dir }}"
 
