@@ -101,6 +101,10 @@ neofs_storage__grpc_allow: []
 neofs_storage__grpc_group_allow: []
 neofs_storage__grpc_host_allow: []
 
+neofs_storage__control_enabled: False
+neofs_storage__control_authorized_keys: []
+neofs_storage__control_endpoint: 'localhost:8090'
+
 neofs_storage__prometheus_enabled: False
 neofs_storage__prometheus_port: '6662'
 neofs_storage__prometheus_address: 'localhost'
