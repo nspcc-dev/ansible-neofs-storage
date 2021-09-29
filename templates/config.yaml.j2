@@ -54,7 +54,7 @@ contracts:
 {% endfor %}
 
 logger:
-  level: debug
+  level: {{ neofs_storage__loglevel }}
 
 metrics:
   address: {{ neofs_storage__prometheus_address }}:{{ neofs_storage__prometheus_port }}
