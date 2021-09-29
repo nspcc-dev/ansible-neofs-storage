@@ -20,29 +20,29 @@ neofs_storage__shards:
     blobstor:
       path: "{{ neofs_storage__data_dir}}/data"
       perm: 0750
+      compress: true
+      shallow_depth: 5
+      small_size_limit: 102400 # 100Kb
     blobovnicza:
-      opened_cache_size: 32
+      size: 4194304 # 4Mb
       shallow_depth: 1
       shallow_width: 1
+      opened_cache_size: 32
     gc:
       remover_batch_size: 100
       remover_sleep_interval: 1m
     write_cache:
       enabled: False
       path: "{{ neofs_storage__data_dir}}/write_cache"
-      mem_size: 1073741824
-      db_size: 0
-      small_size: 32768
-      max_size: 67108864
-      workers_count: 20
+      mem_size: 1073741824   # 1Gb
+      small_size: 32768      # 32Kb
+      max_size: 67108864     # 64Mb
+      workers_number: 20
+      size_limit: 4294967296 # 4Gb
 
 # Worker pool configuration
-neofs_storage__put_pool: 100
-neofs_storage__get_pool: 100
-neofs_storage__head_pool: 100
-neofs_storage__search_pool: 100
-neofs_storage__range_pool: 100
-neofs_storage__rangehash_pool: 100
+neofs_storage__put_pool_remote: 100
+neofs_storage__put_pool_local: 101
 
 # Local path to wallet
 neofs_storage__wallet: "wallet.json"

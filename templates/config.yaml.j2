@@ -72,10 +72,10 @@ storage:
       writecache:
         path: {{ shard['write_cache']['path'] }}
         mem_size: {{ shard['write_cache']['mem_size'] }}
-        db_size: {{ shard['write_cache']['db_size'] }}
         small_size: {{ shard['write_cache']['small_size'] }}
         max_size: {{ shard['write_cache']['max_size'] }}
-        workers_count: {{ shard['write_cache']['workers_count'] }}
+        workers_number: {{ shard['write_cache']['workers_number'] }}
+        size_limit: {{ shard['write_cache']['size_limit'] }}
 {% endif %}
       metabase:
         path: {{ shard['metabase']['path'] }}
@@ -83,10 +83,14 @@ storage:
       blobstor:
         path: {{ shard['blobstor']['path'] }}
         perm: {{ shard['blobstor']['perm'] }}
+        compress: {{ shard['blobstor']['compress'] }}
+        shallow_depth: {{ shard['blobstor']['shallow_depth'] }}
+        small_size_limit: {{ shard['blobstor']['small_size_limit'] }}
         blobovnicza:
-          opened_cache_size: {{ shard['blobovnicza']['opened_cache_size'] }}
+          size: {{ shard['blobovnicza']['size'] }}
           shallow_depth: {{ shard['blobovnicza']['shallow_depth'] }}
           shallow_width: {{ shard['blobovnicza']['shallow_width'] }}
+          opened_cache_size: {{ shard['blobovnicza']['opened_cache_size'] }}
       gc:
         remover_batch_size: {{ shard['gc']['remover_batch_size'] }}
         remover_sleep_interval: {{ shard['gc']['remover_sleep_interval'] }}
@@ -94,14 +98,5 @@ storage:
 
 object:
   put:
-    pool_size: {{ neofs_storage__put_pool }}
-  get:
-    pool_size: {{ neofs_storage__get_pool }}
-  head:
-    pool_size: {{ neofs_storage__head_pool }}
-  search:
-    pool_size: {{ neofs_storage__search_pool }}
-  range:
-    pool_size: {{ neofs_storage__put_pool }}
-  rangehash:
-    pool_size: {{ neofs_storage__put_pool }}
+    pool_size_remote: {{ neofs_storage__put_pool_remote }}
+    pool_size_local: {{ neofs_storage__put_pool_local }}
