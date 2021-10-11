@@ -10,7 +10,7 @@ neofs_storage__instance: ''
 # Directory for configuration files and keys
 neofs_storage__conf_dir: "/etc/neofs/storage{{ neofs_storage__instance }}"
 
-neofs_storage__loglevel: 'info'
+neofs_storage__loglevel: 'warning'
 
 # Directory for databases and processing results
 neofs_storage__data_dir: "/var/lib/neofs/neofs-storage{{ neofs_storage__instance }}"
