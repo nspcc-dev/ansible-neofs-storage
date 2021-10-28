@@ -85,13 +85,19 @@ neofs_storage__morph_notification:
   - 'wss://rpc6.morph.fs.neo.org:40341/ws'
   - 'wss://rpc7.morph.fs.neo.org:40341/ws'
 
-neofs_storage__contracts:
-  netmap: '600270a6fd666dc137fa3e62c9d2606b75aeb298'
-  balance: '2835a2d2a28ffc8866840df7aafda5780c7514a3'
-  container: '08ebc0b968cdce2851f1a1d2fe9340e77b1f0f6c'
-  neofs: '37a32e1bf20ed5141bc5748892a82f14e75a8e22'
-  audit: '27571287757e0e9809d01799c9f049a8ae5952ce'
-  proxy: 'dedf58b489e5af01a1a2089393102d46d74806ac'
+
+# hashes are retrived from NNS contract
+neofs_storage__contracts: []
+
+# override values optionaly:
+#neofs_storage__contracts:
+#  balance:    ''
+#  container:  ''
+#  netmap:     ''
+#  reputation: ''
+#  neofs:      ''
+#  audit:      ''
+#  proxy:      ''
 
 neofs_storage__attributes: []
 
