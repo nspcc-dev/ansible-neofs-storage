@@ -22,6 +22,7 @@ node:
 {% for attr in neofs_storage__attributes %}
   attribute_{{ loop.index - 1 }}: {{ attr }}:{{ neofs_storage__attributes[attr] }}
 {% endfor %}
+  relay: {{ neofs_storage__relay }}
 
 grpc:
   num: {{ '2' if neofs_storage__tls_enabled else '1' }}
