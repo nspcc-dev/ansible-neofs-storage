@@ -17,11 +17,23 @@
     system: True
     state: 'present'
 
+# this recursively creates configuration directory with root:root 755 permissions
 - name: Ensure configuration directory exists
   ansible.builtin.file:
     state: directory
     path: "{{ item }}"
-    owner: "root"
+    owner: 'root'
+    group: 'root'
+    mode: '0755'
+  with_items:
+    - "{{ neofs_storage__conf_dir }}"
+
+# this changes configuration directory permissions only
+- name: Ensure configuration directory permissions
+  ansible.builtin.file:
+    state: directory
+    path: "{{ item }}"
+    owner: 'root'
     group: "{{ neofs_storage__group }}"
     mode: '0750'
   with_items:
