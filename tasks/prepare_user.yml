@@ -1,0 +1,28 @@
+---
+
+- name: Ensure there is neofs group
+  ansible.builtin.group:
+    name: "{{ neofs_storage__group }}"
+    system: yes
+    state: 'present'
+
+- name: Ensure there is neofs user
+  ansible.builtin.user:
+    name: "{{ neofs_storage__user }}"
+    group: "{{ neofs_storage__group }}"
+    password: '*'
+    shell: /usr/sbin/nologin
+    home: "{{ neofs_storage__data_dir }}"
+    system: yes
+    skeleton: no
+    state: 'present'
+
+- name: Get uid for neofs user
+  ansible.builtin.getent:
+    database: passwd
+    key: "{{ neofs_storage__user }}"
+
+- name: Get gid for neofs user
+  ansible.builtin.getent:
+    database: group
+    key: "{{ neofs_storage__group }}"
