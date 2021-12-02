@@ -1,21 +1,7 @@
 ---
 
 # Prepare system
-- name: Ensure there is neofs group
-  ansible.builtin.group:
-    name: "{{ neofs_storage__group }}"
-    system: True
-    state: 'present'
-
-- name: Ensure there is neofs user
-  ansible.builtin.user:
-    name: "{{ neofs_storage__user }}"
-    group: "{{ neofs_storage__group }}"
-    password: !
-    shell: /usr/sbin/nologin
-    home: "{{ neofs_storage__data_dir }}"
-    system: True
-    state: 'present'
+- ansible.builtin.include: 'prepare_user.yml'
 
 # this recursively creates configuration directory with root:root 755 permissions
 - name: Ensure configuration directory exists
