@@ -1,11 +1,11 @@
 neofs-storage
 =========
 
-[Ansible][ansible] role for setting up [NeoFS][neofs] Storage [node][node].
+[Ansible][ansible] role for setting up [NeoFS][neofs] [Storage node][node].
 
 [ansible]: https://github.com/ansible/ansible
-[neofs]: https://fs.neo.org
-[node]: https://github.com/nspcc-dev/neofs-node
+[neofs]:   https://fs.neo.org
+[node]:    https://github.com/nspcc-dev/neofs-node
 
 License
 -------
