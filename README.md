@@ -1,15 +1,7 @@
-neofs-storage
+Ansible [NeoFS Storage][neofs-node] role.
 =========
 
-[Ansible][ansible] role for setting up [NeoFS][neofs] [Storage node][node].
+This role deploys [Storage node][neofs-node] for [NeoFS][neofs].
 
-[ansible]: https://github.com/ansible/ansible
-[neofs]:   https://fs.neo.org
-[node]:    https://github.com/nspcc-dev/neofs-node
-
-License
--------
-
-The project is licensed under the [GNU General Public License 3.0 or later][GPL-3.0-or-later].
-
-[GPL-3.0-or-later]: https://www.gnu.org/licenses/gpl-3.0
+[neofs-node]: https://github.com/nspcc-dev/neofs-node
+[neofs]:      https://fs.neo.org
