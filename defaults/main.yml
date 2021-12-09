@@ -104,6 +104,8 @@ neofs_storage__contracts: []
 
 neofs_storage__attributes: []
 neofs_storage__relay: False
+neofs_storage__subnet_exit_zero: False
+neofs_storage__subnet_entries: []
 
 # Ports and options for each service
 neofs_storage__grpc_port: '8080'
