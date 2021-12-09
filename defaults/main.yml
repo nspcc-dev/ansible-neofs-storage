@@ -15,6 +15,9 @@ neofs_storage__loglevel: 'info'
 # Directory for databases and processing results
 neofs_storage__data_dir: "/var/lib/neofs/neofs-storage{{ neofs_storage__instance }}"
 
+# sync metabase with blobstore on start, expensive, leave false until complete understanding
+neofs_storage__resync_metabase: False
+
 neofs_storage__shards:
   - metabase:
       path: "{{ neofs_storage__data_dir}}/metabase.db"
@@ -23,24 +26,24 @@ neofs_storage__shards:
       path: "{{ neofs_storage__data_dir}}/data"
       perm: 0750
       compress: true
-      shallow_depth: 5
-      small_size_limit: 102400 # 100Kb
+      depth: 5
+      small_object_size: 102400 # 100Kb
     blobovnicza:
       size: 4194304 # 4Mb
-      shallow_depth: 1
-      shallow_width: 1
-      opened_cache_size: 32
+      depth: 1
+      width: 1
+      opened_cache_capacity: 32
     gc:
       remover_batch_size: 100
       remover_sleep_interval: 1m
     write_cache:
       enabled: False
       path: "{{ neofs_storage__data_dir}}/write_cache"
-      mem_size: 1073741824   # 1Gb
-      small_size: 32768      # 32Kb
-      max_size: 67108864     # 64Mb
+      memcache_capacity: 1073741824          # 1Gb
+      small_size: 32768             # 32Kb
+      max_object_size: 67108864     # 64Mb
       workers_number: 20
-      size_limit: 4294967296 # 4Gb
+      capcity: 4294967296 # 4Gb
 
 # Worker pool configuration
 neofs_storage__put_pool_remote: 100
@@ -129,7 +132,7 @@ neofs_storage__pprof_group_allow: []
 neofs_storage__pprof_host_allow: []
 
 # NeoFS options
-neofs_storage__version: '0.26.0'
+neofs_storage__version: '0.27.0'
 neofs_storage__docker_image: "nspccdev/neofs-ir:{{ neofs_storage__version }}"
 neofs_storage__bin_url: "https://github.com/nspcc-dev/neofs-node/releases/download/v{{ neofs_storage__version }}/neofs-node-amd64"
 neofs_storage__bin_path: '/usr/local/bin/neofs-node'
