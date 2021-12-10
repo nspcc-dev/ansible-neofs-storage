@@ -27,9 +27,9 @@ neofs_storage__shards:
       perm: 0750
       compress: true
       depth: 5
-      small_object_size: 102400 # 100Kb
+      small_object_size: 100 kb
     blobovnicza:
-      size: 4194304 # 4Mb
+      size: 4 gb
       depth: 1
       width: 1
       opened_cache_capacity: 32
@@ -39,11 +39,11 @@ neofs_storage__shards:
     write_cache:
       enabled: False
       path: "{{ neofs_storage__data_dir}}/write_cache"
-      memcache_capacity: 1073741824          # 1Gb
-      small_size: 32768             # 32Kb
-      max_object_size: 67108864     # 64Mb
+      memcache_capacity: 1 gb      
+      small_size: 32 kb    
+      max_object_size: 64 mb 
       workers_number: 20
-      capcity: 4294967296 # 4Gb
+      capcity: 4 gb
 
 # Worker pool configuration
 neofs_storage__put_pool_remote: 100
