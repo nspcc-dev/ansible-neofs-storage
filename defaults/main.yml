@@ -39,9 +39,9 @@ neofs_storage__shards:
     write_cache:
       enabled: False
       path: "{{ neofs_storage__data_dir}}/write_cache"
-      memcache_capacity: 1gb      
-      small_size: 32kb    
-      max_object_size: 64mb 
+      memcache_capacity: 1gb
+      small_size: 32kb
+      max_object_size: 64mb
       workers_number: 20
       capcity: 4gb
 
