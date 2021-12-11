@@ -23,6 +23,16 @@ node:
   attribute_{{ loop.index - 1 }}: {{ attr }}:{{ neofs_storage__attributes[attr] }}
 {% endfor %}
   relay: {{ neofs_storage__relay }}
+  subnet:
+    exit_zero: {{ neofs_storage__subnet_exit_zero }}
+{% if neofs_storage__subnet_entries|length %}
+    entries: 
+{% for a in neofs_storage__subnet_entries %}
+    - {{ a }}
+{% endfor %}
+{% else %}
+    entries: []
+{% endif %}
 
 grpc:
   num: {{ '2' if neofs_storage__tls_enabled else '1' }}
@@ -72,11 +82,11 @@ storage:
 {% if shard['write_cache']['enabled'] %}
       writecache:
         path: {{ shard['write_cache']['path'] }}
-        mem_size: {{ shard['write_cache']['mem_size'] }}
+        memcache_capacity: {{ shard['write_cache']['memcache_capacity'] }}
         small_size: {{ shard['write_cache']['small_size'] }}
-        max_size: {{ shard['write_cache']['max_size'] }}
+        max_object_size: {{ shard['write_cache']['max_object_size'] }}
         workers_number: {{ shard['write_cache']['workers_number'] }}
-        size_limit: {{ shard['write_cache']['size_limit'] }}
+        capacity: {{ shard['write_cache']['capacity'] }}
 {% endif %}
       metabase:
         path: {{ shard['metabase']['path'] }}
@@ -85,13 +95,13 @@ storage:
         path: {{ shard['blobstor']['path'] }}
         perm: {{ shard['blobstor']['perm'] }}
         compress: {{ shard['blobstor']['compress'] }}
-        shallow_depth: {{ shard['blobstor']['shallow_depth'] }}
-        small_size_limit: {{ shard['blobstor']['small_size_limit'] }}
+        depth: {{ shard['blobstor']['depth'] }}
+        small_object_size: {{ shard['blobstor']['small_object_size'] }}
         blobovnicza:
           size: {{ shard['blobovnicza']['size'] }}
-          shallow_depth: {{ shard['blobovnicza']['shallow_depth'] }}
-          shallow_width: {{ shard['blobovnicza']['shallow_width'] }}
-          opened_cache_size: {{ shard['blobovnicza']['opened_cache_size'] }}
+          depth: {{ shard['blobovnicza']['depth'] }}
+          width: {{ shard['blobovnicza']['width'] }}
+          opened_cache_capacity: {{ shard['blobovnicza']['opened_cache_capacity'] }}
       gc:
         remover_batch_size: {{ shard['gc']['remover_batch_size'] }}
         remover_sleep_interval: {{ shard['gc']['remover_sleep_interval'] }}
