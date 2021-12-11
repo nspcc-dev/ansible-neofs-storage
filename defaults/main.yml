@@ -43,7 +43,7 @@ neofs_storage__shards:
       small_size: 32kb
       max_object_size: 64mb
       workers_number: 20
-      capcity: 4gb
+      capacity: 4gb
 
 # Worker pool configuration
 neofs_storage__put_pool_remote: 100
