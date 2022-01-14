@@ -128,7 +128,7 @@ neofs_storage__prometheus_host_allow: []
 
 neofs_storage__pprof_enabled: False
 neofs_storage__pprof_port: '6661'
-neofs_storage__pprof_address: '{{ neofs_storage__bind_address }}'
+neofs_storage__pprof_address: 'localhost'
 neofs_storage__pprof_allow: []
 neofs_storage__pprof_group_allow: []
 neofs_storage__pprof_host_allow: []
