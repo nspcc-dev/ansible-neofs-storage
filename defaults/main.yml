@@ -143,6 +143,12 @@ neofs_storage__docker_image: "nspccdev/neofs-ir:{{ neofs_storage__version }}"
 neofs_storage__bin_url: "https://github.com/nspcc-dev/neofs-node/releases/download/v{{ neofs_storage__version }}/neofs-node-amd64"
 neofs_storage__bin_path: '/usr/local/bin/neofs-node'
 
+# NeoFS Cli options
+neofs_storage__cli_bin_url: "https://github.com/nspcc-dev/neofs-node/releases/download/v{{ neofs_storage__version }}/neofs-cli-amd64"
+neofs_storage__cli_bin_path: '/usr/local/bin/neofs-cli'
+
+neofs_storage__control_api_config_path: "{{ neofs_storage__conf_dir }}/control.yml"
+
 # Systemd unit may use docker compose to run NeoFS IR in container, instead of
 # local binary.
 neofs_storage__use_compose: False

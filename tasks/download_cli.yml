@@ -1,0 +1,9 @@
+---
+
+- name: Download neofs-cli binary
+  ansible.builtin.get_url:
+    url: "{{ neofs_storage__cli_bin_url }}"
+    dest: "{{ neofs_storage__cli_bin_path }}"
+    owner: 'root'
+    group: 'root'
+    mode: '0755'
