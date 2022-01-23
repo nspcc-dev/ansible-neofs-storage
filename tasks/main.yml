@@ -48,6 +48,8 @@
 - include: download_binary.yml
   when: not (neofs_storage__use_compose | bool)
 
+- include: download_cli.yml
+
 - name: Get uid for neofs-storage user
   ansible.builtin.getent:
     database: passwd
@@ -91,6 +93,8 @@
     state: 'started'
     enabled: yes
     daemon_reload: yes
+
+- include: healthcheck.yml
 
 - name: Force debops.ferm run
   include_role:

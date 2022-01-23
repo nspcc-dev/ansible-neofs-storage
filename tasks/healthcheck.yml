@@ -1,0 +1,17 @@
+---
+
+- name: Write config for Control API
+  ansible.builtin.template:
+    src: 'control.yml.j2'
+    dest: "{{ neofs_storage__control_api_config_path }}"
+    owner: 'root'
+    group: "{{ neofs_storage__group }}"
+    mode: '0640'
+
+- name: Run a check
+  ansible.builtin.shell: |
+      {{ neofs_storage__cli_bin_path }} control healthcheck -c {{ neofs_storage__control_api_config_path }}
+  register: _neofs_storage_check_result
+  until: _neofs_storage_check_result.rc == 0
+  retries: 10
+  delay: 30
