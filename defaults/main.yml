@@ -117,7 +117,11 @@ neofs_storage__grpc_host_allow: []
 
 neofs_storage__control_enabled: False
 neofs_storage__control_authorized_keys: []
-neofs_storage__control_endpoint: 'localhost:8090'
+neofs_storage__control_endpoint_host: 'localhost'
+neofs_storage__control_endpoint_port: '8090'
+neofs_storage__control_allow: []
+neofs_storage__control_group_allow: []
+neofs_storage__control_host_allow: []
 
 neofs_storage__prometheus_enabled: False
 neofs_storage__prometheus_port: '6662'
@@ -185,3 +189,12 @@ neofs_storage__ferm__dependent_rules:
     protocol: 'tcp'
     role: 'neofs-storage'
     rule_state: "{{ 'present' if neofs_storage__pprof_enabled else 'absent' }}"
+
+  - type: 'accept'
+    name: "neofs-storage{{ neofs_storage__instance }}_control"
+    dport: [ '{{ neofs_storage__control_endpoint_port }}' ]
+    daddr: [ '{{ neofs_storage__control_endpoint_host }}' ]
+    saddr: '{{ neofs_storage__control_allow + neofs_storage__control_group_allow + neofs_storage__control_host_allow }}'
+    protocol: 'tcp'
+    role: 'neofs-storage'
+    rule_state: "{{ 'present' if neofs_storage__control_enabled else 'absent' }}"

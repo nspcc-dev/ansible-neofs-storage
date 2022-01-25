@@ -26,7 +26,7 @@ node:
   subnet:
     exit_zero: {{ neofs_storage__subnet_exit_zero }}
 {% if neofs_storage__subnet_entries|length %}
-    entries: 
+    entries:
 {% for a in neofs_storage__subnet_entries %}
     - {{ a }}
 {% endfor %}
@@ -56,7 +56,7 @@ control:
     - {{ authorized_key }}
 {% endfor %}
   grpc:
-    endpoint: {{ neofs_storage__control_endpoint }}
+    endpoint: {{ neofs_storage__control_endpoint_host }}:{{ neofs_storage__control_endpoint_port }}
 {% endif %}
 
 contracts:
