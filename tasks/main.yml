@@ -3,19 +3,17 @@
 # Prepare system
 - ansible.builtin.include: 'prepare_user.yml'
 
-# this recursively creates configuration directory with root:root 755 permissions
-- name: Ensure configuration directory exists
+- name: Create configuration directory parent
   ansible.builtin.file:
     state: directory
-    path: "{{ item }}"
+    path: "{{ item | realpath | dirname }}"
     owner: 'root'
     group: 'root'
     mode: '0755'
   with_items:
     - "{{ neofs_storage__conf_dir }}"
 
-# this changes configuration directory permissions only
-- name: Ensure configuration directory permissions
+- name: Create configuration directory
   ansible.builtin.file:
     state: directory
     path: "{{ item }}"
