@@ -1,6 +1,6 @@
 ---
 
-- name: Restart neofs-storage service
+- name: Restart NeoFS Storage service
   ansible.builtin.systemd:
     name: "neofs-storage{{ neofs_storage__instance }}.service"
     state: 'restarted'

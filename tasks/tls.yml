@@ -1,0 +1,19 @@
+---
+
+- name: Copy TLS key & certificate
+  block:
+    - ansible.builtin.copy:
+        content: "{{ neofs_storage__tls_key_path }}"
+        dest: "{{ neofs_storage__tls_key }}"
+        owner: 'root'
+        group: "{{ neofs_storage__group }}"
+        mode: '0640'
+    - ansible.builtin.copy:
+        content: "{{ neofs_storage__tls_key_path }}"
+        dest: "{{ neofs_storage__tls_key }}"
+        owner: 'root'
+        group: "{{ neofs_storage__group }}"
+        mode: '0640'
+  when: neofs_storage__tls_enabled
+  notify:
+    - Restart NeoFS Storage service
