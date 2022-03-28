@@ -4,18 +4,16 @@
   ansible.builtin.group:
     name: "{{ neofs_storage__group }}"
     system: yes
-    state: 'present'
 
 - name: Create NeoFS Storage user
   ansible.builtin.user:
     name: "{{ neofs_storage__user }}"
     group: "{{ neofs_storage__group }}"
     password: '*'
-    shell: /usr/sbin/nologin
+    shell: '/usr/sbin/nologin'
     home: "{{ neofs_storage__data_dir }}"
     system: yes
     skeleton: no
-    state: 'present'
 
 - name: Get UID for NeoFS Storage user
   ansible.builtin.getent:
