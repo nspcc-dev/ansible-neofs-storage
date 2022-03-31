@@ -1,7 +1,4 @@
 ---
 
 - name: Restart NeoFS Storage service
-  ansible.builtin.systemd:
-    name: "neofs-storage{{ neofs_storage__instance }}.service"
-    state: 'restarted'
-    daemon_reload: yes
+  ansible.builtin.include_tasks: 'restart.yml'

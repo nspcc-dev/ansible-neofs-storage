@@ -1,0 +1,16 @@
+---
+
+- name: Restart NeoFS Storage systemd service
+  ansible.builtin.systemd:
+    name: "neofs-storage{{ neofs_storage__instance }}.service"
+    state: 'restarted'
+    daemon_reload: yes
+
+- name: Waiting for node up
+  ansible.builtin.shell:
+    cmd: "{{ neofs_storage__cli_bin_path }} control healthcheck -c {{ neofs_storage__control_api_config_path }}"
+  changed_when: False
+  register: _neofs_storage_check_result
+  until: _neofs_storage_check_result.rc == 0
+  retries: 10
+  delay: 30
