@@ -7,12 +7,3 @@
     owner: 'root'
     group: "{{ neofs_storage__group }}"
     mode: '0640'
-
-- name: Waiting for node up
-  ansible.builtin.shell: |
-    {{ neofs_storage__cli_bin_path }} control healthcheck -c {{ neofs_storage__control_api_config_path }}
-  changed_when: False
-  register: _neofs_storage_check_result
-  until: _neofs_storage_check_result.rc == 0
-  retries: 10
-  delay: 30
