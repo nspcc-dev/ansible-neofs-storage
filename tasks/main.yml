@@ -33,7 +33,7 @@
     owner: 'root'
     group: "{{ neofs_storage__group }}"
     mode: '0640'
-  notify: [ 'Restart NeoFS Storage service' ]
+  notify: [ 'Restart NeoFS Storage' ]
 
 - ansible.builtin.include_tasks: 'binary.yml'
 
@@ -47,21 +47,21 @@
     group: "{{ neofs_storage__group }}"
     mode: '0640'
   when: neofs_storage__use_compose | bool
-  notify: [ 'Restart NeoFS Storage service' ]
+  notify: [ 'Restart NeoFS Storage' ]
 
 - name: Copy regular systemd unit
   ansible.builtin.template:
     src: "neofs-storage.service.bin.j2"
     dest: "/etc/systemd/system/neofs-storage{{ neofs_storage__instance }}.service"
   when: not (neofs_storage__use_compose | bool)
-  notify: [ 'Restart NeoFS Storage service' ]
+  notify: [ 'Restart NeoFS Storage' ]
 
 - name: Copy dockerized systemd unit
   ansible.builtin.template:
     src: "neofs-storage.service.compose.j2"
     dest: "/etc/systemd/system/neofs-storage{{ neofs_storage__instance }}.service"
   when: neofs_storage__use_compose | bool
-  notify: [ 'Restart NeoFS Storage service' ]
+  notify: [ 'Restart NeoFS Storage' ]
 
 - ansible.builtin.include_tasks: 'healthcheck.yml'
 
