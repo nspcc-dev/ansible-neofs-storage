@@ -9,4 +9,4 @@
     group: 'root'
     mode: '0755'
   when: not (neofs_storage__use_compose | bool)
-  notify: [ 'Restart NeoFS Storage service' ]
+  notify: [ 'Restart NeoFS Storage' ]

@@ -4,6 +4,7 @@
   ansible.builtin.systemd:
     name: "neofs-storage{{ neofs_storage__instance }}.service"
     state: 'restarted'
+    enabled: yes
     daemon_reload: yes
 
 - name: Waiting for node up
