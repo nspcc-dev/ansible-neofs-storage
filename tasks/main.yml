@@ -51,14 +51,14 @@
 
 - name: Copy regular systemd unit
   ansible.builtin.template:
-    src: "neofs-storage.service.bin.j2"
+    src: "neofs-storage.service.j2"
     dest: "/etc/systemd/system/neofs-storage{{ neofs_storage__instance }}.service"
   when: not (neofs_storage__use_compose | bool)
   notify: [ 'Restart NeoFS Storage' ]
 
 - name: Copy dockerized systemd unit
   ansible.builtin.template:
-    src: "neofs-storage.service.compose.j2"
+    src: "neofs-storage_compose.service.j2"
     dest: "/etc/systemd/system/neofs-storage{{ neofs_storage__instance }}.service"
   when: neofs_storage__use_compose | bool
   notify: [ 'Restart NeoFS Storage' ]
