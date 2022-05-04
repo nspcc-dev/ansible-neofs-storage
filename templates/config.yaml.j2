@@ -4,11 +4,6 @@ morph:
     - {{ endpoint }}
 {% endfor %}
 
-  notification_endpoint:
-{% for endpoint in neofs_storage__morph_notification %}
-    - {{ endpoint }}
-{% endfor %}
-  dial_timeout: 20s
 
 node:
   wallet:
@@ -33,7 +28,19 @@ node:
 {% else %}
     entries: []
 {% endif %}
-
+  notification:
+    enabled: {{ neofs_storage__notification_server_enable }}  # turn on object notification service
+{% if neofs_storage__notification_server_enable %}
+    endpoint: "tls://{{ neofs_storage__notification_server_endpoint }}"  # notification server endpoint
+    timeout: "{{ neofs_storage__notification_timeout }}"  # timeout for object notification client connection
+    default_topic: "notification"  # default topic for object notifications if not found in object's meta
+    certificate: {{ neofs_storage__tls_cert }}
+    key: {{ neofs_storage__tls_key }}
+{% endif %}
+{% if neofs_storage__persistent_sessions_enable %}
+  persistent_sessions:
+    path: {{ neofs_storage__persistent_sessions_path }}  # path to persistent session tokens file of Storage node
+{% endif %}
 grpc:
   num: {{ '2' if neofs_storage__tls_enabled else '1' }}
   0:
