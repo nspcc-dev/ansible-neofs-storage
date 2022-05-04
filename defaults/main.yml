@@ -61,6 +61,9 @@ neofs_storage__bind_address: '0.0.0.0'
 neofs_storage__announce_address:
   - "{{ neofs_storage__grpc_address }}:{{ neofs_storage__grpc_port }}"
 
+neofs_storage__persistent_sessions_enable: True
+neofs_storage__persistent_sessions_path: "/sessions"
+
 neofs_storage__notification_server_enable: False
 neofs_storage__notification_server_endpoint: 'localhost:4222'
 neofs_storage__notification_timeout: '6s'

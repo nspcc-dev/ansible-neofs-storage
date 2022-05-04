@@ -37,7 +37,10 @@ node:
     certificate: {{ neofs_storage__tls_cert }}
     key: {{ neofs_storage__tls_key }}
 {% endif %}
-
+{% if neofs_storage__persistent_sessions_enable %}
+  persistent_sessions:
+    path: {{ neofs_storage__persistent_sessions_path }}  # path to persistent session tokens file of Storage node
+{% endif %}
 grpc:
   num: {{ '2' if neofs_storage__tls_enabled else '1' }}
   0:
