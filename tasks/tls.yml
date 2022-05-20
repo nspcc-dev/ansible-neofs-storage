@@ -2,15 +2,17 @@
 
 - name: Copy TLS key & certificate
   block:
-    - ansible.builtin.copy:
+    - name: Copy TLS key
+      ansible.builtin.copy:
         content: "{{ neofs_storage__tls_key_path }}"
         dest: "{{ neofs_storage__tls_key }}"
         owner: 'root'
         group: "{{ neofs_storage__group }}"
         mode: '0640'
-    - ansible.builtin.copy:
-        content: "{{ neofs_storage__tls_key_path }}"
-        dest: "{{ neofs_storage__tls_key }}"
+    - name: Copy TLS cert
+      ansible.builtin.copy:
+        content: "{{ neofs_storage__tls_cert_path }}"
+        dest: "{{ neofs_storage__tls_cert }}"
         owner: 'root'
         group: "{{ neofs_storage__group }}"
         mode: '0640'
