@@ -35,6 +35,11 @@ neofs_storage__shards:
       depth: 1
       width: 1
       opened_cache_capacity: 32
+    pilorama:
+      path: "{{ neofs_storage__data_dir}}/pilorama.db"
+      max_batch_delay: 10ms
+      max_batch_size: 400
+      no_sync: False
     gc:
       remover_batch_size: 100
       remover_sleep_interval: 1m

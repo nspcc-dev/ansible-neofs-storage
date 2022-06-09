@@ -110,6 +110,11 @@ storage:
           depth: {{ shard['blobovnicza']['depth'] }}
           width: {{ shard['blobovnicza']['width'] }}
           opened_cache_capacity: {{ shard['blobovnicza']['opened_cache_capacity'] }}
+      pilorama:
+        path: {{ shard['pilorama']['path'] }}
+        max_batch_delay: {{ shard['pilorama']['max_batch_delay'] }}
+        max_batch_size: {{ shard['pilorama']['max_batch_size'] }}
+        no_sync: {{ shard['pilorama']['no_sync'] }}
       gc:
         remover_batch_size: {{ shard['gc']['remover_batch_size'] }}
         remover_sleep_interval: {{ shard['gc']['remover_sleep_interval'] }}
