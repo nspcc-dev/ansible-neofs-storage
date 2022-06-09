@@ -18,6 +18,8 @@ neofs_storage__data_dir: "/var/lib/neofs/neofs-storage{{ neofs_storage__instance
 # sync metabase with blobstore on start, expensive, leave false until complete understanding
 neofs_storage__resync_metabase: False
 
+neofs_storage__shard_pool: 100
+
 neofs_storage__shards:
   - metabase:
       path: "{{ neofs_storage__data_dir}}/metabase.db"
@@ -86,10 +88,10 @@ neofs_storage__morph_rpc:
   - 'wss://rpc6.morph.fs.neo.org:40341/ws'
   - 'wss://rpc7.morph.fs.neo.org:40341/ws'
 
-# hashes are retrived from NNS contract
+# hashes are retrieved from NNS contract
 neofs_storage__contracts: []
 
-# override values optionaly:
+# override values optionally:
 #neofs_storage__contracts:
 #  balance:    ''
 #  container:  ''

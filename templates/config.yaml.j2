@@ -82,6 +82,7 @@ profiler:
 
 storage:
   shard_num: {{ neofs_storage__shards|length }}
+  shard_pool_size: {{ neofs_storage__shard_pool }}
   shard:
 {% for shard in neofs_storage__shards %}
     {{ loop.index - 1 }}:
