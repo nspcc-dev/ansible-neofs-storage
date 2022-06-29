@@ -1,8 +1,21 @@
-morph:
-  rpc_endpoint:
-{% for endpoint in neofs_storage__morph_rpc %}
-    - {{ endpoint }}
-{% endfor %}
+logger:
+  level: {{ neofs_storage__loglevel }}
+
+{% if neofs_storage__pprof_enabled %}
+profiler:
+  address: {{ neofs_storage__pprof_address }}:{{ neofs_storage__pprof_port }}
+{% if neofs_storage__pprof_shutdown_timeout|length > 0 %}
+  shutdown_timeout: {{ neofs_storage__pprof_shutdown_timeout }}
+{% endif %}
+{% endif %}
+
+{% if neofs_storage__prometheus_enabled %}
+metrics:
+  address: {{ neofs_storage__prometheus_address }}:{{ neofs_storage__prometheus_port }}
+{% if neofs_storage__prometheus_shutdown_timeout|length > 0 %}
+  shutdown_timeout: {{ neofs_storage__prometheus_shutdown_timeout }}
+{% endif %}
+{% endif %}
 
 node:
   wallet:
@@ -17,6 +30,14 @@ node:
   attribute_{{ loop.index - 1 }}: {{ attr }}:{{ neofs_storage__attributes[attr] }}
 {% endfor %}
   relay: {{ neofs_storage__relay }}
+{% if neofs_storage__persistent_sessions_enable %}
+  persistent_sessions:
+    path: {{ neofs_storage__persistent_sessions_path }}
+{% endif %}
+{% if neofs_storage__persistent_state_enable %}
+  persistent_state:
+    path: {{ neofs_storage__persistent_state_path }}
+{% endif %}
   subnet:
     exit_zero: {{ neofs_storage__subnet_exit_zero }}
 {% if neofs_storage__subnet_entries|length %}
@@ -28,20 +49,16 @@ node:
     entries: []
 {% endif %}
   notification:
-    enabled: {{ neofs_storage__notification_server_enable }}  # turn on object notification service
+    enabled: {{ neofs_storage__notification_server_enable }}
 {% if neofs_storage__notification_server_enable %}
-    endpoint: "tls://{{ neofs_storage__notification_server_endpoint }}"  # notification server endpoint
-    timeout: "{{ neofs_storage__notification_timeout }}"  # timeout for object notification client connection
-    default_topic: "notification"  # default topic for object notifications if not found in object's meta
+    endpoint: "tls://{{ neofs_storage__notification_server_endpoint }}"
+    timeout: "{{ neofs_storage__notification_timeout }}"
+    default_topic: "notification"
     certificate: {{ neofs_storage__tls_cert_file }}
     key: {{ neofs_storage__tls_key_file }}
 {% endif %}
-{% if neofs_storage__persistent_sessions_enable %}
-  persistent_sessions:
-    path: {{ neofs_storage__persistent_sessions_path }}  # path to persistent session tokens file of Storage node
-{% endif %}
+
 grpc:
-  num: {{ neofs_storage__grpc_endpoints | length }}
 {% for endpoint in neofs_storage__grpc_endpoints %}
   {{ loop.index - 1 }}:
     endpoint: {{ endpoint.address }}:{{ endpoint.port }}
@@ -63,25 +80,56 @@ control:
     endpoint: {{ neofs_storage__control_endpoint_host }}:{{ neofs_storage__control_endpoint_port }}
 {% endif %}
 
+{% if neofs_storage__contracts|length > 0 %}
 contracts:
 {% for contract in neofs_storage__contracts %}
   {{ contract }}: {{ neofs_storage__contracts[contract] }}
 {% endfor %}
+{% endif %}
 
-logger:
-  level: {{ neofs_storage__loglevel }}
+morph:
+{% if neofs_storage__morph_dial_timeout|length > 0 %}
+  dial_timeout: {{ neofs_storage__morph_dial_timeout }}
+{% endif %}
+{% if neofs_storage__morph_disable_cache|length > 0 %}
+  disable_cache: {{ neofs_storage__morph_disable_cache }}
+{% endif %}
+  rpc_endpoint:
+{% for endpoint in neofs_storage__morph_rpc %}
+    - {{ endpoint }}
+{% endfor %}
 
-metrics:
-  address: {{ neofs_storage__prometheus_address }}:{{ neofs_storage__prometheus_port }}
+{% if neofs_storage__apiclient_dial_timeout|length > 0 %}
+apiclient:
+  dial_timeout: "{{ neofs_storage__apiclient_dial_timeout }}"
+{% endif %}
 
-profiler:
-  address: {{ neofs_storage__pprof_address }}:{{ neofs_storage__pprof_port }}
+{% if neofs_storage__policer_head_timeout|length > 0 %}
+policer:
+  head_timeout: "{{ neofs_storage__policer_head_timeout }}"
+{% endif %}
+
+{% if neofs_storage__replicator_put_timeout|length > 0 %}
+replicator:
+  put_timeout: "{{ neofs_storage__replicator_put_timeout }}"
+{% endif %}
+
+object:
+  put:
+    pool_size_remote: {{ neofs_storage__put_pool_remote }}
+    pool_size_local: {{ neofs_storage__put_pool_local }}
 
 storage:
-  shard_num: {{ neofs_storage__shards|length }}
+  shard_pool_size: {{ neofs_storage__shard_pool }}
   shard:
 {% for shard in neofs_storage__shards %}
     {{ loop.index - 1 }}:
+{% if shard['mode']|length > 0 %}
+    mode: {{ shard['mode'] }}
+{% endif %}
+{% if shard['resync_metabase']|length > 0 %}
+    resync_metabase: {{ shard['resync_metabase'] }}
+{% endif %}
 {% if shard['write_cache']['enabled'] %}
       writecache:
         enabled: true
@@ -94,11 +142,23 @@ storage:
 {% endif %}
       metabase:
         path: {{ shard['metabase']['path'] }}
+{% if shard['metabase']['perm']|length > 0 %}
         perm: {{ shard['metabase']['perm'] }}
+{% endif %}
+{% if shard['metabase']['max_batch_size']|length > 0 %}
+	max_batch_size: {{ shard['metabase']['max_batch_size'] }}
+{% endif %}
+{% if shard['metabase']['max_batch_delay']|length > 0 %}
+        max_batch_delay: {{ shard['metabase']['max_batch_delay'] }}
+{% endif %}
       blobstor:
         path: {{ shard['blobstor']['path'] }}
         perm: {{ shard['blobstor']['perm'] }}
         compress: {{ shard['blobstor']['compress'] }}
+	compression_exclude_content_types:
+{% for content_type in shard['blobstor']['compression_exclude_content_types'] %}
+          - {{ content_type }}
+{% endfor %}
         depth: {{ shard['blobstor']['depth'] }}
         small_object_size: {{ shard['blobstor']['small_object_size'] }}
         blobovnicza:
@@ -106,12 +166,12 @@ storage:
           depth: {{ shard['blobovnicza']['depth'] }}
           width: {{ shard['blobovnicza']['width'] }}
           opened_cache_capacity: {{ shard['blobovnicza']['opened_cache_capacity'] }}
+      pilorama:
+        path: {{ shard['pilorama']['path'] }}
+        max_batch_delay: {{ shard['pilorama']['max_batch_delay'] }}
+        max_batch_size: {{ shard['pilorama']['max_batch_size'] }}
+        no_sync: {{ shard['pilorama']['no_sync'] }}
       gc:
         remover_batch_size: {{ shard['gc']['remover_batch_size'] }}
         remover_sleep_interval: {{ shard['gc']['remover_sleep_interval'] }}
 {% endfor %}
-
-object:
-  put:
-    pool_size_remote: {{ neofs_storage__put_pool_remote }}
-    pool_size_local: {{ neofs_storage__put_pool_local }}

@@ -10,6 +10,7 @@ neofs_storage__group: "neofs-storage{{ neofs_storage__instance }}"
 # Directory for configuration files and keys
 neofs_storage__conf_dir: "/etc/neofs/storage{{ neofs_storage__instance }}"
 
+# one of "debug", "info" (default), "warn", "error", "dpanic", "panic", "fatal"
 neofs_storage__loglevel: 'info'
 
 # Directory for databases and processing results
@@ -18,14 +19,21 @@ neofs_storage__data_dir: "/var/lib/neofs/neofs-storage{{ neofs_storage__instance
 # sync metabase with blobstore on start, expensive, leave false until complete understanding
 neofs_storage__resync_metabase: False
 
+neofs_storage__shard_pool: 100
+
 neofs_storage__shards:
-  - metabase:
+  - mode: 'read-write' # read-write | read-only
+    resync_metabase: False
+    metabase:
       path: "{{ neofs_storage__data_dir}}/metabase.db"
       perm: 0640
+      max_batch_size: 200
+      max_batch_delay: 1m
     blobstor:
       path: "{{ neofs_storage__data_dir}}/data"
       perm: 0750
-      compress: true
+      compress: True
+      compression_exclude_content_types: []
       depth: 5
       small_object_size: 100kb
     blobovnicza:
@@ -33,6 +41,11 @@ neofs_storage__shards:
       depth: 1
       width: 1
       opened_cache_capacity: 32
+    pilorama:
+      path: "{{ neofs_storage__data_dir}}/pilorama.db"
+      max_batch_delay: 10ms
+      max_batch_size: 400
+      no_sync: False
     gc:
       remover_batch_size: 100
       remover_sleep_interval: 1m
@@ -44,6 +57,15 @@ neofs_storage__shards:
       max_object_size: 64mb
       workers_number: 20
       capacity: 4gb
+
+# timeout for NEOFS API client connection
+neofs_storage__apiclient_dial_timeout: '15s'
+
+# timeout for the Policer HEAD remote operation
+neofs_storage__policer_head_timeout: '15s'
+
+# timeout for the Replicator PUT remote operation
+neofs_storage__replicator_put_timeout: '15s'
 
 # Worker pool configuration
 neofs_storage__put_pool_remote: 100
@@ -63,6 +85,9 @@ neofs_storage__announce_addresses:
 
 neofs_storage__persistent_sessions_enable: True
 neofs_storage__persistent_sessions_path: "{{ neofs_storage__data_dir }}/sessions"
+
+neofs_storage__persistent_state_enable: True
+neofs_storage__persistent_state_path: "{{ neofs_storage__data_dir }}/state"
 
 neofs_storage__notification_server_enable: False
 neofs_storage__notification_server_endpoint: 'localhost:4222'
@@ -89,6 +114,11 @@ neofs_storage__grpc_endpoints:
     tls_cert_file: "{{ neofs_storage__tls_cert_file }}"
     tls_key_file:  "{{ neofs_storage__tls_key_file }}"
 
+# timeout for side chain NEO RPC client connection
+neofs_storage__morph_dial_timeout: '30s'
+# do not use TTL cache for side chain GET operations
+neofs_storage__morph_disable_cache: True
+
 neofs_storage__morph_rpc:
   - 'wss://rpc1.morph.fs.neo.org:40341/ws'
   - 'wss://rpc2.morph.fs.neo.org:40341/ws'
@@ -98,10 +128,10 @@ neofs_storage__morph_rpc:
   - 'wss://rpc6.morph.fs.neo.org:40341/ws'
   - 'wss://rpc7.morph.fs.neo.org:40341/ws'
 
-# hashes are retrived from NNS contract
+# hashes are retrieved from NNS contract
 neofs_storage__contracts: {}
 
-# override values optionaly:
+# override values optionally:
 #neofs_storage__contracts:
 #  balance:    ''
 #  container:  ''
@@ -117,31 +147,33 @@ neofs_storage__subnet_exit_zero: False
 neofs_storage__subnet_entries: []
 
 # Ports and options for each service
+neofs_storage__grpc_address: '{{ neofs_storage__bind_address }}'
 neofs_storage__grpc_port: '8080'
 neofs_storage__grpcs_port: '8082'
-neofs_storage__grpc_address: '{{ neofs_storage__bind_address }}'
 neofs_storage__grpc_allow: []
 neofs_storage__grpc_group_allow: []
 neofs_storage__grpc_host_allow: []
 
 neofs_storage__control_enabled: False
-neofs_storage__control_authorized_keys: []
 neofs_storage__control_endpoint_host: 'localhost'
 neofs_storage__control_endpoint_port: '8090'
+neofs_storage__control_authorized_keys: []
 neofs_storage__control_allow: []
 neofs_storage__control_group_allow: []
 neofs_storage__control_host_allow: []
 
 neofs_storage__prometheus_enabled: False
-neofs_storage__prometheus_port: '6662'
 neofs_storage__prometheus_address: 'localhost'
+neofs_storage__prometheus_port: '6662'
+neofs_storage__prometheus_shutdown_timeout: ''
 neofs_storage__prometheus_allow: []
 neofs_storage__prometheus_group_allow: []
 neofs_storage__prometheus_host_allow: []
 
 neofs_storage__pprof_enabled: False
-neofs_storage__pprof_port: '6661'
 neofs_storage__pprof_address: 'localhost'
+neofs_storage__pprof_port: '6661'
+neofs_storage__pprof_shutdown_timeout: ''
 neofs_storage__pprof_allow: []
 neofs_storage__pprof_group_allow: []
 neofs_storage__pprof_host_allow: []
