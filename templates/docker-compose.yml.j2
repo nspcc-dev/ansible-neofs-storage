@@ -11,7 +11,7 @@ services:
     stop_signal: SIGKILL
     user: "{{ getent_passwd[neofs_storage__user][1] }}:{{ getent_group[neofs_storage__user][1] }}"
     entrypoint: /bin/neofs-node
-    command: -config {{ neofs_storage__conf_dir }}/config.yaml
+    command: --config {{ neofs_storage__config_path }}
     volumes:
     - {{ neofs_storage__data_dir }}:{{ neofs_storage__data_dir }}
     - {{ neofs_storage__conf_dir }}:{{ neofs_storage__conf_dir }}
