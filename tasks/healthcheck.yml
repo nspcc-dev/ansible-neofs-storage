@@ -1,9 +1,9 @@
 ---
 
-- name: Write config for Control API
+- name: Copy control api config
   ansible.builtin.template:
     src: 'control.yml.j2'
-    dest: "{{ neofs_storage__control_api_config_path }}"
+    dest: '{{ neofs_storage__control_api_config_path }}'
     owner: 'root'
-    group: "{{ neofs_storage__group }}"
+    group: '{{ neofs_storage__group }}'
     mode: '0640'

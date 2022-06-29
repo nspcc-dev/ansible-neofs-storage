@@ -1,0 +1,29 @@
+{% set cfg = {'result': False}                                            %}
+{% set _ = cfg.__setitem__('result', neofs_storage__raw_config)           %}
+
+{% for part in neofs_storage__combined_config                             %}
+{%   if 'enabled' not in part or part.enabled                             %}
+{%     if part.replace | d(False)                                         %}
+{%       set o = part.options                                             %}
+{%     else                                                               %}
+{%       if 'path' in part                                                %}
+{%         set o = cfg.result[part.path] | combine( part.options,
+                                                    recursive=True,
+                                                    list_merge='append' ) %}
+{%       else                                                             %}
+{%         set o = cfg.result | combine( part.options,
+                                         recursive=True,
+                                         list_merge='append' )            %}
+{%       endif                                                            %}
+{%     endif                                                              %}
+{%     if 'path' in part                                                  %}
+{%       set _ = cfg.result.__setitem__(part.path, o)                     %}
+{%     else                                                               %}
+{%       set _ = cfg.__setitem__('result', o)                             %}
+{%     endif                                                              %}
+{%   endif                                                                %}
+{% endfor                                                                 %}
+
+{{ ansible_managed | comment }}
+
+{{ cfg.result | to_nice_yaml(indent=2) }}

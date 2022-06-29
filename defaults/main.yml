@@ -1,162 +1,140 @@
 ---
 
+neofs_storage__version: '0.28.3'
+neofs_storage__bin_url: 'https://github.com/nspcc-dev/neofs-node/releases/download/v{{ neofs_storage__version }}/neofs-node-amd64'
+neofs_storage__cli_bin_url: 'https://github.com/nspcc-dev/neofs-node/releases/download/v{{ neofs_storage__version }}/neofs-cli-amd64'
+neofs_storage__docker_image: 'nspccdev/neofs-ir:{{ neofs_storage__version }}'
+
 # Instance name to have multiple NeoFS nodes on the same host
 neofs_storage__instance: ''
 
-# User and group for NeoFS to run and own files
-neofs_storage__user: "neofs-storage{{ neofs_storage__instance }}"
-neofs_storage__group: "neofs-storage{{ neofs_storage__instance }}"
+neofs_storage__user: 'neofs-storage{{ neofs_storage__instance }}'
+neofs_storage__group: 'neofs-storage{{ neofs_storage__instance }}'
 
-# Directory for configuration files and keys
-neofs_storage__conf_dir: "/etc/neofs/storage{{ neofs_storage__instance }}"
-
-neofs_storage__loglevel: 'info'
+neofs_storage__conf_dir: '/etc/neofs/storage{{ neofs_storage__instance }}'
+neofs_storage__config_path: '{{ neofs_storage__conf_dir }}/config.yml'
+neofs_storage__bin_path: '/usr/bin/neofs-node'
+neofs_storage__cli_bin_path: '/usr/bin/neofs-cli'
+neofs_storage__control_api_config_path: '{{ neofs_storage__conf_dir }}/control.yml'
 
 # Directory for databases and processing results
-neofs_storage__data_dir: "/var/lib/neofs/neofs-storage{{ neofs_storage__instance }}"
+neofs_storage__data_dir: '/var/lib/neofs/storage{{ neofs_storage__instance }}'
 
-# sync metabase with blobstore on start, expensive, leave false until complete understanding
-neofs_storage__resync_metabase: False
-
-neofs_storage__shards:
-  - metabase:
-      path: "{{ neofs_storage__data_dir}}/metabase.db"
-      perm: 0640
-    blobstor:
-      path: "{{ neofs_storage__data_dir}}/data"
-      perm: 0750
-      compress: true
-      depth: 5
-      small_object_size: 100kb
-    blobovnicza:
-      size: 4gb
-      depth: 1
-      width: 1
-      opened_cache_capacity: 32
-    gc:
-      remover_batch_size: 100
-      remover_sleep_interval: 1m
-    write_cache:
-      enabled: False
-      path: "{{ neofs_storage__data_dir}}/write_cache"
-      memcache_capacity: 1gb
-      small_size: 32kb
-      max_object_size: 64mb
-      workers_number: 20
-      capacity: 4gb
-
-# Worker pool configuration
-neofs_storage__put_pool_remote: 100
-neofs_storage__put_pool_local: 101
-
-# Local path to wallet
-neofs_storage__wallet: 'wallet.json'
-# Path to wallet on the remote host
-neofs_storage__wallet_path: "{{ neofs_storage__conf_dir }}/wallet.json"
+neofs_storage__wallet_content: ''
+neofs_storage__wallet_path: '{{ neofs_storage__conf_dir }}/wallet.json'
 neofs_storage__wallet_addr: ''
-neofs_storage__wallet_passwd: '~'
+neofs_storage__wallet_passwd: ''
 
-# Default bind address
-neofs_storage__bind_address: '0.0.0.0'
-neofs_storage__announce_addresses:
-  - "{{ neofs_storage__grpc_address }}:{{ neofs_storage__grpc_port }}"
+neofs_storage__announce_addresses: [ '{{ neofs_storage__grpc_address }}:{{ neofs_storage__grpc_port }}' ]
 
-neofs_storage__persistent_sessions_enable: True
-neofs_storage__persistent_sessions_path: "{{ neofs_storage__data_dir }}/sessions"
-
-neofs_storage__notification_server_enable: False
-neofs_storage__notification_server_endpoint: 'localhost:4222'
-neofs_storage__notification_timeout: '6s'
-
-neofs_storage__tls_enabled: False
-neofs_storage__tls_endpoint: "{{ neofs_storage__grpc_address }}:{{ neofs_storage__grpcs_port }}"
-# TLS certificate and key content
-neofs_storage__tls_cert: ''
-neofs_storage__tls_key: ''
-# Remote files
-neofs_storage__tls_cert_file: "{{ neofs_storage__conf_dir }}/tls.cert"
-neofs_storage__tls_key_file: "{{ neofs_storage__conf_dir }}/tls.key"
-
-neofs_storage__grpc_endpoints:
-  - address: "{{ neofs_storage__grpc_address }}"
-    port: "{{ neofs_storage__grpc_port }}"
-    tls: False
-  - address: "{{ neofs_storage__grpc_address }}"
-    port: "{{ neofs_storage__grpcs_port }}"
-    tls: True
-    tls_cert:      "{{ neofs_storage__tls_cert }}"
-    tls_key:       "{{ neofs_storage__tls_key }}"
-    tls_cert_file: "{{ neofs_storage__tls_cert_file }}"
-    tls_key_file:  "{{ neofs_storage__tls_key_file }}"
-
-neofs_storage__morph_rpc:
-  - 'wss://rpc1.morph.fs.neo.org:40341/ws'
-  - 'wss://rpc2.morph.fs.neo.org:40341/ws'
-  - 'wss://rpc3.morph.fs.neo.org:40341/ws'
-  - 'wss://rpc4.morph.fs.neo.org:40341/ws'
-  - 'wss://rpc5.morph.fs.neo.org:40341/ws'
-  - 'wss://rpc6.morph.fs.neo.org:40341/ws'
-  - 'wss://rpc7.morph.fs.neo.org:40341/ws'
-
-# hashes are retrived from NNS contract
-neofs_storage__contracts: {}
-
-# override values optionaly:
-#neofs_storage__contracts:
-#  balance:    ''
-#  container:  ''
-#  netmap:     ''
-#  reputation: ''
-#  neofs:      ''
-#  audit:      ''
-#  proxy:      ''
-
-neofs_storage__attributes: []
-neofs_storage__relay: False
-neofs_storage__subnet_exit_zero: False
-neofs_storage__subnet_entries: []
-
-# Ports and options for each service
-neofs_storage__grpc_port: '8080'
-neofs_storage__grpcs_port: '8082'
-neofs_storage__grpc_address: '{{ neofs_storage__bind_address }}'
+neofs_storage__grpc_address: '0.0.0.0'
+neofs_storage__grpc_port: 8080
+neofs_storage__grpcs_port: 8082
 neofs_storage__grpc_allow: []
 neofs_storage__grpc_group_allow: []
 neofs_storage__grpc_host_allow: []
 
+neofs_storage__tls_enabled: False
+neofs_storage__tls_cert: ''
+neofs_storage__tls_key: ''
+neofs_storage__tls_cert_file: '{{ neofs_storage__conf_dir }}/tls.cert'
+neofs_storage__tls_key_file: '{{ neofs_storage__conf_dir }}/tls.key'
+
 neofs_storage__control_enabled: False
-neofs_storage__control_authorized_keys: []
-neofs_storage__control_endpoint_host: 'localhost'
-neofs_storage__control_endpoint_port: '8090'
+neofs_storage__control_address: 'localhost'
+neofs_storage__control_port: 8090
 neofs_storage__control_allow: []
 neofs_storage__control_group_allow: []
 neofs_storage__control_host_allow: []
 
-neofs_storage__prometheus_enabled: False
-neofs_storage__prometheus_port: '6662'
-neofs_storage__prometheus_address: 'localhost'
-neofs_storage__prometheus_allow: []
-neofs_storage__prometheus_group_allow: []
-neofs_storage__prometheus_host_allow: []
+neofs_storage__metrics_enabled: False
+neofs_storage__metrics_address: 'localhost'
+neofs_storage__metrics_port: 6662
+neofs_storage__metrics_allow: []
+neofs_storage__metrics_group_allow: []
+neofs_storage__metrics_host_allow: []
 
 neofs_storage__pprof_enabled: False
-neofs_storage__pprof_port: '6661'
 neofs_storage__pprof_address: 'localhost'
+neofs_storage__pprof_port: 6661
 neofs_storage__pprof_allow: []
 neofs_storage__pprof_group_allow: []
 neofs_storage__pprof_host_allow: []
 
-# NeoFS options
-neofs_storage__version: '0.27.0'
-neofs_storage__docker_image: "nspccdev/neofs-ir:{{ neofs_storage__version }}"
-neofs_storage__bin_url: "https://github.com/nspcc-dev/neofs-node/releases/download/v{{ neofs_storage__version }}/neofs-node-amd64"
-neofs_storage__bin_path: '/usr/local/bin/neofs-node'
+neofs_storage__grpc_endpoints:
+  0:
+    endpoint: '{{ neofs_storage__grpc_address }}:{{ neofs_storage__grpc_port }}'
+  1:
+    endpoint: '{{ neofs_storage__grpc_address }}:{{ neofs_storage__grpcs_port }}'
+    tls:
+      enabled: True
+      certificate: '{{ neofs_storage__tls_cert_file }}'
+      key: '{{ neofs_storage__tls_key_file }}'
 
-# NeoFS Cli options
-neofs_storage__cli_bin_url: "https://github.com/nspcc-dev/neofs-node/releases/download/v{{ neofs_storage__version }}/neofs-cli-amd64"
-neofs_storage__cli_bin_path: '/usr/local/bin/neofs-cli'
+neofs_storage__raw_config:
+  logger:
+    level: info
+  morph:
+    rpc_endpoint:
+      - 'wss://rpc1.morph.fs.neo.org:40341/ws'
+      - 'wss://rpc2.morph.fs.neo.org:40341/ws'
+      - 'wss://rpc3.morph.fs.neo.org:40341/ws'
+      - 'wss://rpc4.morph.fs.neo.org:40341/ws'
+      - 'wss://rpc5.morph.fs.neo.org:40341/ws'
+      - 'wss://rpc6.morph.fs.neo.org:40341/ws'
+      - 'wss://rpc7.morph.fs.neo.org:40341/ws'
+  node:
+    wallet:
+      path: '{{ neofs_storage__wallet_path }}'
+      address: '{{ neofs_storage__wallet_address }}'
+      password: '{{ neofs_storage__wallet_passwd }}'
+    addresses: '{{ neofs_storage__announce_addresses }}'
+    persistent_sessions:
+      path: '{{ neofs_storage__data_dir }}/sessions'
+    persistent_state:
+      path: '{{ neofs_storage__data_dir }}/state'
+    subnet:
+      exit_zero: False
+    relay: False
+  grpc: '{{ neofs_storage__grpc_endpoints }}'
+  control:
+    grpc:
+      endpoint: '{{ neofs_storage__control_address }}:{{ neofs_storage__control_port }}'
+  storage:
+    shard:
+      0:
+        metabase:
+          path: '{{ neofs_storage__data_dir}}/metabase.db'
+        blobstor:
+          path: '{{ neofs_storage__data_dir}}/data'
+        writecache:
+          path: '{{ neofs_storage__data_dir}}/write_cache'
+  object:
+    put:
+      pool_size_remote: 100
+      pool_size_local: 101
 
-neofs_storage__control_api_config_path: "{{ neofs_storage__conf_dir }}/control.yml"
+neofs_storage__default_config:
+  - enabled: '{{ neofs_storage__metrics_enabled }}'
+    options:
+      metrics:
+        address: '{{ neofs_storage__metrics_address }}:{{ neofs_storage__metrics_port }}'
+  
+  - enabled: '{{ neofs_storage__pprof_enabled }}'
+    options:
+      profiler:
+        address: '{{ neofs_storage__pprof_address }}:{{ neofs_storage__pprof_port }}'
+
+neofs_storage__config: []
+neofs_storage__group_config: []
+neofs_storage__host_config: []
+
+neofs_storage__combined_config: '{{ 
+  neofs_storage__default_config +
+  neofs_storage__config + 
+  neofs_storage__group_config +
+  neofs_storage__host_config }}'
+
 
 # Systemd unit may use docker compose to run NeoFS IR in container, instead of
 # local binary.
@@ -170,7 +148,7 @@ neofs_storage__debops_ferm_import: False
 # firewall configuration to be applied with debops.ferm role
 neofs_storage__ferm__dependent_rules:
   - type: 'accept'
-    name: "neofs-storage{{ neofs_storage__instance }}_grpc"
+    name: 'neofs-storage{{ neofs_storage__instance }}_grpc'
     dport: [ '{{ neofs_storage__grpc_port }}' ]
     daddr: [ '{{ neofs_storage__grpc_address }}' ]
     saddr: '{{ neofs_storage__grpc_allow + neofs_storage__grpc_group_allow + neofs_storage__grpc_host_allow }}'
@@ -179,25 +157,25 @@ neofs_storage__ferm__dependent_rules:
     rule_state: 'present'
 
   - type: 'accept'
-    name: "neofs-storage{{ neofs_storage__instance }}_grpcs"
+    name: 'neofs-storage{{ neofs_storage__instance }}_grpcs'
     dport: [ '{{ neofs_storage__grpcs_port }}' ]
     daddr: [ '{{ neofs_storage__grpc_address }}' ]
     saddr: '{{ neofs_storage__grpc_allow + neofs_storage__grpc_group_allow + neofs_storage__grpc_host_allow }}'
     protocol: 'tcp'
     role: 'neofs-storage'
-    rule_state: 'present'
+    rule_state: "{{ 'present' if neofs_storage__tls_enabled else 'absent' }}"
 
   - type: 'accept'
-    name: "neofs-storage{{ neofs_storage__instance }}_prometheus"
-    dport: [ '{{ neofs_storage__prometheus_port }}' ]
-    daddr: [ '{{ neofs_storage__prometheus_address }}' ]
-    saddr: '{{ neofs_storage__prometheus_allow + neofs_storage__prometheus_group_allow + neofs_storage__prometheus_host_allow }}'
+    name: 'neofs-storage{{ neofs_storage__instance }}_metrics'
+    dport: [ '{{ neofs_storage__metrics_port }}' ]
+    daddr: [ '{{ neofs_storage__metrics_address }}' ]
+    saddr: '{{ neofs_storage__metrics_allow + neofs_storage__metrics_group_allow + neofs_storage__metrics_host_allow }}'
     protocol: 'tcp'
     role: 'neofs-storage'
-    rule_state: "{{ 'present' if neofs_storage__prometheus_enabled else 'absent' }}"
+    rule_state: "{{ 'present' if neofs_storage__metrics_enabled else 'absent' }}"
 
   - type: 'accept'
-    name: "neofs-storage{{ neofs_storage__instance }}_pprof"
+    name: 'neofs-storage{{ neofs_storage__instance }}_pprof'
     dport: [ '{{ neofs_storage__pprof_port }}' ]
     daddr: [ '{{ neofs_storage__pprof_address }}' ]
     saddr: '{{ neofs_storage__pprof_allow + neofs_storage__pprof_group_allow + neofs_storage__pprof_host_allow }}'
@@ -206,9 +184,9 @@ neofs_storage__ferm__dependent_rules:
     rule_state: "{{ 'present' if neofs_storage__pprof_enabled else 'absent' }}"
 
   - type: 'accept'
-    name: "neofs-storage{{ neofs_storage__instance }}_control"
-    dport: [ '{{ neofs_storage__control_endpoint_port }}' ]
-    daddr: [ '{{ neofs_storage__control_endpoint_host }}' ]
+    name: 'neofs-storage{{ neofs_storage__instance }}_control'
+    dport: [ '{{ neofs_storage__control_port }}' ]
+    daddr: [ '{{ neofs_storage__control_address }}' ]
     saddr: '{{ neofs_storage__control_allow + neofs_storage__control_group_allow + neofs_storage__control_host_allow }}'
     protocol: 'tcp'
     role: 'neofs-storage'

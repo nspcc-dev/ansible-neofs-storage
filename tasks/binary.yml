@@ -2,11 +2,11 @@
 
 - name: Download NeoFS Storage binary
   ansible.builtin.get_url:
-    url: "{{ neofs_storage__bin_url }}"
-    dest: "{{ neofs_storage__bin_path }}"
+    url: '{{ neofs_storage__bin_url }}'
+    dest: '{{ neofs_storage__bin_path }}'
     force: yes
     owner: 'root'
     group: 'root'
     mode: '0755'
-  when: not (neofs_storage__use_compose | bool)
   notify: [ 'Restart NeoFS Storage' ]
+  when: not (neofs_storage__use_compose | bool)

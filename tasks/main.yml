@@ -1,74 +1,67 @@
 ---
 
-- ansible.builtin.include_tasks: 'user.yml'
+- ansible.builtin.include_tasks: user.yml
 
 - name: Create configuration directory parent
   ansible.builtin.file:
     state: directory
-    path: "{{ item | realpath | dirname }}"
+    path: '{{ neofs_storage__conf_dir | realpath | dirname }}'
     owner: 'root'
     group: 'root'
     mode: '0755'
-  with_items:
-    - "{{ neofs_storage__conf_dir }}"
 
 - name: Create configuration directory
   ansible.builtin.file:
     state: directory
-    path: "{{ item }}"
+    path: '{{ neofs_storage__conf_dir }}'
     owner: 'root'
-    group: "{{ neofs_storage__group }}"
+    group: '{{ neofs_storage__group }}'
     mode: '0750'
-  with_items:
-    - "{{ neofs_storage__conf_dir }}"
 
-- ansible.builtin.include_tasks: 'wallet.yml'
-
-- ansible.builtin.include_tasks: 'tls.yml'
+- ansible.builtin.include_tasks: binary.yml
+- ansible.builtin.include_tasks: cli.yml
+- ansible.builtin.include_tasks: wallet.yml
+- ansible.builtin.include_tasks: tls.yml
 
 - name: Copy NeoFS Storage config
   ansible.builtin.template:
-    src: 'config.yaml.j2'
-    dest: "{{ neofs_storage__conf_dir }}/config.yaml"
+    src: 'config.yml.j2'
+    dest: '{{ neofs_storage__config_path }}'
     owner: 'root'
-    group: "{{ neofs_storage__group }}"
+    group: '{{ neofs_storage__group }}'
     mode: '0640'
   notify: [ 'Restart NeoFS Storage' ]
-
-- ansible.builtin.include_tasks: 'binary.yml'
-
-- ansible.builtin.include_tasks: 'cli.yml'
 
 - name: Copy compose file
   ansible.builtin.template:
     src: 'docker-compose.yml.j2'
-    dest: "{{ neofs_storage__conf_dir }}/docker-compose.yml"
+    dest: '{{ neofs_storage__conf_dir }}/docker-compose.yml'
     owner: 'root'
-    group: "{{ neofs_storage__group }}"
+    group: '{{ neofs_storage__group }}'
     mode: '0640'
-  when: neofs_storage__use_compose | bool
   notify: [ 'Restart NeoFS Storage' ]
+  when: neofs_storage__use_compose | bool
 
 - name: Copy regular systemd unit
   ansible.builtin.template:
-    src: "neofs-storage.service.j2"
-    dest: "/etc/systemd/system/neofs-storage{{ neofs_storage__instance }}.service"
-  when: not (neofs_storage__use_compose | bool)
+    src: 'neofs-storage.service.j2'
+    dest: '/etc/systemd/system/neofs-storage{{ neofs_storage__instance }}.service'
   notify: [ 'Restart NeoFS Storage' ]
+  when: not (neofs_storage__use_compose | bool)
 
 - name: Copy dockerized systemd unit
   ansible.builtin.template:
-    src: "neofs-storage_compose.service.j2"
-    dest: "/etc/systemd/system/neofs-storage{{ neofs_storage__instance }}.service"
-  when: neofs_storage__use_compose | bool
+    src: 'neofs-storage_compose.service.j2'
+    dest: '/etc/systemd/system/neofs-storage{{ neofs_storage__instance }}.service'
   notify: [ 'Restart NeoFS Storage' ]
+  when: neofs_storage__use_compose | bool
 
-- ansible.builtin.include_tasks: 'healthcheck.yml'
+- ansible.builtin.include_tasks: healthcheck.yml
 
 - name: Force debops.ferm run
   ansible.builtin.include_role:
     name: debops.debops.ferm
   vars:
     ferm__dependent_rules:
-      - "{{ neofs_storage__ferm__dependent_rules }}"
+      - '{{ neofs_storage__ferm__dependent_rules }}'
   when: neofs_storage__debops_ferm_import | bool
