@@ -4,17 +4,23 @@
   block:
     - name: Copy TLS key
       ansible.builtin.copy:
-        content: "{{ neofs_storage__tls_key_path }}"
-        dest: "{{ neofs_storage__tls_key }}"
+        content: "{{ item.tls_key }}"
+        dest: "{{ item.tls_key_file }}"
         owner: 'root'
         group: "{{ neofs_storage__group }}"
         mode: '0640'
+      loop: "{{ neofs_storage__grpc_endpoints | community.general.json_query('[?tls]') }}"
+      loop_control:
+        label: "{{ item.tls_key_file }}"
     - name: Copy TLS cert
       ansible.builtin.copy:
-        content: "{{ neofs_storage__tls_cert_path }}"
-        dest: "{{ neofs_storage__tls_cert }}"
+        content: "{{ item.tls_cert }}"
+        dest: "{{ item.tls_cert_file }}"
         owner: 'root'
         group: "{{ neofs_storage__group }}"
         mode: '0640'
+      loop: "{{ neofs_storage__grpc_endpoints | community.general.json_query('[?tls]') }}"
+      loop_control:
+        label: "{{ item.tls_cert_file }}"
   when: neofs_storage__tls_enabled
   notify: [ 'Restart NeoFS Storage' ]
