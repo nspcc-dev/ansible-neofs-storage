@@ -1,11 +1,11 @@
 ---
 
+# Instance name to have multiple NeoFS nodes on the same host
+neofs_storage__instance: ''
+
 # User and group for NeoFS to run and own files
 neofs_storage__user: "neofs-storage{{ neofs_storage__instance }}"
 neofs_storage__group: "neofs-storage{{ neofs_storage__instance }}"
-
-# Instance name to have multiple NeoFS nodes on the same host
-neofs_storage__instance: ''
 
 # Directory for configuration files and keys
 neofs_storage__conf_dir: "/etc/neofs/storage{{ neofs_storage__instance }}"
@@ -57,15 +57,15 @@ neofs_storage__put_pool_remote: 100
 neofs_storage__put_pool_local: 101
 
 # Local path to wallet
-neofs_storage__wallet: "wallet.json"
+neofs_storage__wallet: 'wallet.json'
 # Path to wallet on the remote host
 neofs_storage__wallet_path: "{{ neofs_storage__conf_dir }}/wallet.json"
-neofs_storage__wallet_addr: ""
-neofs_storage__wallet_passwd: "~"
+neofs_storage__wallet_addr: ''
+neofs_storage__wallet_passwd: '~'
 
 # Default bind address
 neofs_storage__bind_address: '0.0.0.0'
-neofs_storage__announce_address:
+neofs_storage__announce_addresses:
   - "{{ neofs_storage__grpc_address }}:{{ neofs_storage__grpc_port }}"
 
 neofs_storage__persistent_sessions_enable: True
@@ -77,12 +77,24 @@ neofs_storage__notification_timeout: '6s'
 
 neofs_storage__tls_enabled: False
 neofs_storage__tls_endpoint: "{{ neofs_storage__grpc_address }}:{{ neofs_storage__grpcs_port }}"
-# Local paths to TLS certificate and key
-neofs_storage__tls_cert_path: "/path/to/cert"
-neofs_storage__tls_key_path: "/path/to/key"
-# Remote paths to TLS certificate and key
-neofs_storage__tls_cert: "{{ neofs_storage__conf_dir }}/tls.cert"
-neofs_storage__tls_key: "{{ neofs_storage__conf_dir }}/tls.key"
+# TLS certificate and key content
+neofs_storage__tls_cert: ''
+neofs_storage__tls_key: ''
+# Remote files
+neofs_storage__tls_cert_file: "{{ neofs_storage__conf_dir }}/tls.cert"
+neofs_storage__tls_key_file: "{{ neofs_storage__conf_dir }}/tls.key"
+
+neofs_storage__grpc_endpoints:
+  - address: "{{ neofs_storage__grpc_address }}"
+    port: "{{ neofs_storage__grpc_port }}"
+    tls: False
+  - address: "{{ neofs_storage__grpc_address }}"
+    port: "{{ neofs_storage__grpcs_port }}"
+    tls: True
+    tls_cert:      "{{ neofs_storage__tls_cert }}"
+    tls_key:       "{{ neofs_storage__tls_key }}"
+    tls_cert_file: "{{ neofs_storage__tls_cert_file }}"
+    tls_key_file:  "{{ neofs_storage__tls_key_file }}"
 
 neofs_storage__morph_rpc:
   - 'wss://rpc1.morph.fs.neo.org:40341/ws'
@@ -94,7 +106,8 @@ neofs_storage__morph_rpc:
   - 'wss://rpc7.morph.fs.neo.org:40341/ws'
 
 # hashes are retrieved from NNS contract
-neofs_storage__contracts: []
+neofs_storage__contracts: {}
+
 
 # override values optionally:
 #neofs_storage__contracts:
