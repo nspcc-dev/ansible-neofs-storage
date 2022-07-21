@@ -1,6 +1,6 @@
 ---
 
-neofs_storage__version: '0.28.3'
+neofs_storage__version: '0.30.0'
 neofs_storage__bin_url: 'https://github.com/nspcc-dev/neofs-node/releases/download/v{{ neofs_storage__version }}/neofs-node-amd64'
 neofs_storage__cli_bin_url: 'https://github.com/nspcc-dev/neofs-node/releases/download/v{{ neofs_storage__version }}/neofs-cli-amd64'
 neofs_storage__docker_image: 'nspccdev/neofs-ir:{{ neofs_storage__version }}'
@@ -18,12 +18,12 @@ neofs_storage__cli_bin_path: '/usr/bin/neofs-cli'
 neofs_storage__control_api_config_path: '{{ neofs_storage__conf_dir }}/control.yml'
 
 # Directory for databases and processing results
-neofs_storage__data_dir: '/var/lib/neofs/storage{{ neofs_storage__instance }}'
+neofs_storage__data_dir: '/srv/neofs{{ neofs_storage__instance }}'
 
-neofs_storage__wallet_content: ''
+neofs_storage__wallet_struct: ''
 neofs_storage__wallet_path: '{{ neofs_storage__conf_dir }}/wallet.json'
-neofs_storage__wallet_addr: ''
-neofs_storage__wallet_passwd: ''
+neofs_storage__wallet_address: ''
+neofs_storage__wallet_password: ''
 
 neofs_storage__announce_addresses: [ '{{ neofs_storage__grpc_address }}:{{ neofs_storage__grpc_port }}' ]
 
@@ -62,14 +62,42 @@ neofs_storage__pprof_group_allow: []
 neofs_storage__pprof_host_allow: []
 
 neofs_storage__grpc_endpoints:
-  0:
-    endpoint: '{{ neofs_storage__grpc_address }}:{{ neofs_storage__grpc_port }}'
-  1:
-    endpoint: '{{ neofs_storage__grpc_address }}:{{ neofs_storage__grpcs_port }}'
+  - address: '{{ neofs_storage__grpc_address }}'
+    port: '{{ neofs_storage__grpc_port }}'
+    allow: '{{ neofs_storage__grpc_allow + neofs_storage__grpc_group_allow + neofs_storage__grpc_host_allow }}'
+  - enabled: '{{ neofs_storage__tls_enabled }}'
+    address: '{{ neofs_storage__grpc_address }}'
+    port: '{{ neofs_storage__grpcs_port }}'
+    allow: '{{ neofs_storage__grpc_allow + neofs_storage__grpc_group_allow + neofs_storage__grpc_host_allow }}'
+    tls: True
+    tls_cert:      '{{ neofs_storage__tls_cert }}'
+    tls_key:       '{{ neofs_storage__tls_key }}'
+    tls_cert_file: '{{ neofs_storage__tls_cert_file }}'
+    tls_key_file:  '{{ neofs_storage__tls_key_file }}'
+
+neofs_storage__grpc: |
+  {% for endpoint in neofs_storage__grpc_endpoints %}
+  {% if 'enabled' not in endpoint or endpoint.enabled %}
+  {{ loop.index - 1 }}:
+    endpoint: {{ endpoint.address }}:{{ endpoint.port }}
+  {% if 'tls' in endpoint and endpoint.tls %}
     tls:
       enabled: True
-      certificate: '{{ neofs_storage__tls_cert_file }}'
-      key: '{{ neofs_storage__tls_key_file }}'
+      certificate: {{ neofs_storage__tls_cert_file }}
+      key: {{ neofs_storage__tls_key_file }}
+  {% endif %}
+  {% endif %}
+  {% endfor %}
+
+neofs_storage__grpc_ferm_rules: |
+  {% for endpoint in neofs_storage__grpc_endpoints %}
+  {% if 'enabled' not in endpoint or endpoint.enabled %}
+  - dport: [ '{{ endpoint.port }}' ]
+    daddr: [ '{{ endpoint.address }}' ]
+    saddr: {{ endpoint.allow }}
+    protocol: 'tcp'
+  {% endif %}
+  {% endfor %}
 
 neofs_storage__raw_config:
   logger:
@@ -87,7 +115,7 @@ neofs_storage__raw_config:
     wallet:
       path: '{{ neofs_storage__wallet_path }}'
       address: '{{ neofs_storage__wallet_address }}'
-      password: '{{ neofs_storage__wallet_passwd }}'
+      password: '{{ neofs_storage__wallet_password }}'
     addresses: '{{ neofs_storage__announce_addresses }}'
     persistent_sessions:
       path: '{{ neofs_storage__data_dir }}/sessions'
@@ -96,7 +124,7 @@ neofs_storage__raw_config:
     subnet:
       exit_zero: False
     relay: False
-  grpc: '{{ neofs_storage__grpc_endpoints }}'
+  grpc: '{{ neofs_storage__grpc | from_yaml }}'
   control:
     grpc:
       endpoint: '{{ neofs_storage__control_address }}:{{ neofs_storage__control_port }}'
@@ -119,7 +147,7 @@ neofs_storage__default_config:
     options:
       metrics:
         address: '{{ neofs_storage__metrics_address }}:{{ neofs_storage__metrics_port }}'
-  
+
   - enabled: '{{ neofs_storage__pprof_enabled }}'
     options:
       profiler:
@@ -129,9 +157,9 @@ neofs_storage__config: []
 neofs_storage__group_config: []
 neofs_storage__host_config: []
 
-neofs_storage__combined_config: '{{ 
+neofs_storage__combined_config: '{{
   neofs_storage__default_config +
-  neofs_storage__config + 
+  neofs_storage__config +
   neofs_storage__group_config +
   neofs_storage__host_config }}'
 
@@ -149,21 +177,9 @@ neofs_storage__debops_ferm_import: False
 neofs_storage__ferm__dependent_rules:
   - type: 'accept'
     name: 'neofs-storage{{ neofs_storage__instance }}_grpc'
-    dport: [ '{{ neofs_storage__grpc_port }}' ]
-    daddr: [ '{{ neofs_storage__grpc_address }}' ]
-    saddr: '{{ neofs_storage__grpc_allow + neofs_storage__grpc_group_allow + neofs_storage__grpc_host_allow }}'
-    protocol: 'tcp'
+    rules: '{{ neofs_storage__grpc_ferm_rules | from_yaml }}'
     role: 'neofs-storage'
     rule_state: 'present'
-
-  - type: 'accept'
-    name: 'neofs-storage{{ neofs_storage__instance }}_grpcs'
-    dport: [ '{{ neofs_storage__grpcs_port }}' ]
-    daddr: [ '{{ neofs_storage__grpc_address }}' ]
-    saddr: '{{ neofs_storage__grpc_allow + neofs_storage__grpc_group_allow + neofs_storage__grpc_host_allow }}'
-    protocol: 'tcp'
-    role: 'neofs-storage'
-    rule_state: "{{ 'present' if neofs_storage__tls_enabled else 'absent' }}"
 
   - type: 'accept'
     name: 'neofs-storage{{ neofs_storage__instance }}_metrics'
