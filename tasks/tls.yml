@@ -9,7 +9,7 @@
         owner: 'root'
         group: '{{ neofs_storage__group }}'
         mode: '0640'
-      loop: "{{ neofs_storage__grpc_endpoints | community.general.json_query('[?tls]') }}"
+      loop: "{{ neofs_storage__grpc_endpoints | community.general.json_query('[? tls && enabled]') }}"
       loop_control:
         label: '{{ item.tls_key_file }}'
     - name: Copy TLS cert
@@ -19,8 +19,8 @@
         owner: 'root'
         group: '{{ neofs_storage__group }}'
         mode: '0640'
-      loop: "{{ neofs_storage__grpc_endpoints | community.general.json_query('[?tls]') }}"
+      loop: "{{ neofs_storage__grpc_endpoints | community.general.json_query('[? tls && enabled]') }}"
       loop_control:
         label: '{{ item.tls_cert_file }}'
   notify: [ 'Restart NeoFS Storage' ]
-  when: neofs_storage__tls_enabled
+  when: neofs_storage__grpc_endpoints | community.general.json_query('[? tls && enabled ]') | length
