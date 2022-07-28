@@ -9,7 +9,7 @@ services:
     hostname: neofs-storage{{ neofs_storage__instance }}
     network_mode: host
     stop_signal: SIGKILL
-    user: "{{ getent_passwd[neofs_storage__user][1] }}:{{ getent_group[neofs_storage__user][1] }}"
+    user: '{{ getent_passwd[neofs_storage__user][1] }}:{{ getent_group[neofs_storage__user][1] }}'
     entrypoint: /bin/neofs-node
     command: --config {{ neofs_storage__config_path }}
     volumes:
