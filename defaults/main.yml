@@ -145,12 +145,14 @@ neofs_storage__raw_config:
 neofs_storage__default_config:
   - enabled: '{{ neofs_storage__metrics_enabled }}'
     options:
-      metrics:
+      prometheus:
+        enabled: True
         address: '{{ neofs_storage__metrics_address }}:{{ neofs_storage__metrics_port }}'
 
   - enabled: '{{ neofs_storage__pprof_enabled }}'
     options:
       profiler:
+        enabled: True
         address: '{{ neofs_storage__pprof_address }}:{{ neofs_storage__pprof_port }}'
 
 neofs_storage__config: []
