@@ -1,6 +1,6 @@
 ---
 
-neofs_storage__version: '0.30.0'
+neofs_storage__version: '0.30.1'
 neofs_storage__bin_url: 'https://github.com/nspcc-dev/neofs-node/releases/download/v{{ neofs_storage__version }}/neofs-node-amd64'
 neofs_storage__cli_bin_url: 'https://github.com/nspcc-dev/neofs-node/releases/download/v{{ neofs_storage__version }}/neofs-cli-amd64'
 neofs_storage__docker_image: 'nspccdev/neofs-ir:{{ neofs_storage__version }}'
