@@ -151,7 +151,7 @@ neofs_storage__default_config:
 
   - enabled: '{{ neofs_storage__pprof_enabled }}'
     options:
-      profiler:
+      pprof:
         enabled: True
         address: '{{ neofs_storage__pprof_address }}:{{ neofs_storage__pprof_port }}'
 
