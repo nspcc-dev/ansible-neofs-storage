@@ -184,7 +184,7 @@ neofs_storage__ferm__dependent_rules:
     rule_state: 'present'
 
   - type: 'accept'
-    name: 'neofs-storage{{ neofs_storage__instance }}_metrics'
+    name: 'neofs-storage{{ neofs_storage__instance }}_prometheus'
     dport: [ '{{ neofs_storage__prometheus_port }}' ]
     daddr: [ '{{ neofs_storage__prometheus_address }}' ]
     saddr: '{{ neofs_storage__prometheus_allow + neofs_storage__prometheus_group_allow + neofs_storage__prometheus_host_allow }}'
