@@ -143,7 +143,7 @@ neofs_storage__raw_config:
       pool_size_local: 101
 
 neofs_storage__default_config:
-  - enabled: '{{ nneofs_storage__prometheus_enabled }}'
+  - enabled: '{{ neofs_storage__prometheus_enabled }}'
     options:
       prometheus:
         enabled: True
