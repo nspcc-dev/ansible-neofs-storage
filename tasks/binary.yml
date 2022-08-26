@@ -10,3 +10,7 @@
     mode: '0755'
   notify: [ 'Restart NeoFS Storage' ]
   when: not (neofs_storage__use_compose | bool) and (neofs_storage__binaries_downloads | bool)
+  register: download_result
+  retries: 5
+  delay: 5
+  until: download_result.status_code != '200'
