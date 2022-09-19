@@ -12,4 +12,4 @@
   register: download_result
   retries: 5
   delay: 5
-  until: download_result.status_code != '200'
+  until: not download_result.failed
