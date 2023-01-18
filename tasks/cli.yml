@@ -13,3 +13,4 @@
   retries: 5
   delay: 5
   until: not download_result.failed
+  ignore_errors: '{{ ansible_check_mode }}'
