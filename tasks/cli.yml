@@ -8,7 +8,7 @@
     owner: 'root'
     group: 'root'
     mode: '0755'
-  when: neofs_storage__binaries_downloads | bool
+  when: neofs_storage__binaries_download | bool
   register: download_result
   retries: 5
   delay: 5
