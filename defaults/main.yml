@@ -171,7 +171,7 @@ neofs_storage__combined_config: '{{
 neofs_storage__use_compose: False
 
 # Flag to skip binaries download
-neofs_storage__binaries_downloads: True
+neofs_storage__binaries_download: True
 
 # Force debops.ferm run via role import
 # May be useful when you need to have multiple instances with different
