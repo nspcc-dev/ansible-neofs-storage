@@ -141,6 +141,9 @@ neofs_storage__raw_config:
     put:
       pool_size_remote: 100
       pool_size_local: 101
+  apiclient:
+    dial_timeout: 15s
+    stream_timeout: 20s
 
 neofs_storage__default_config:
   - enabled: '{{ neofs_storage__prometheus_enabled }}'
