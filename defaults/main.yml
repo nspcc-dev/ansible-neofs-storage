@@ -186,7 +186,6 @@ neofs_storage__ferm__dependent_rules:
   - type: 'accept'
     name: 'neofs-storage{{ neofs_storage__instance }}_grpc'
     rules: '{{ neofs_storage__grpc_ferm_rules | from_yaml }}'
-    role: 'neofs-storage'
     rule_state: 'present'
 
   - type: 'accept'
@@ -195,7 +194,6 @@ neofs_storage__ferm__dependent_rules:
     daddr: [ '{{ neofs_storage__prometheus_address }}' ]
     saddr: '{{ neofs_storage__prometheus_allow + neofs_storage__prometheus_group_allow + neofs_storage__prometheus_host_allow }}'
     protocol: 'tcp'
-    role: 'neofs-storage'
     rule_state: "{{ 'present' if neofs_storage__prometheus_enabled else 'absent' }}"
 
   - type: 'accept'
@@ -204,7 +202,6 @@ neofs_storage__ferm__dependent_rules:
     daddr: [ '{{ neofs_storage__pprof_address }}' ]
     saddr: '{{ neofs_storage__pprof_allow + neofs_storage__pprof_group_allow + neofs_storage__pprof_host_allow }}'
     protocol: 'tcp'
-    role: 'neofs-storage'
     rule_state: "{{ 'present' if neofs_storage__pprof_enabled else 'absent' }}"
 
   - type: 'accept'
@@ -213,5 +210,4 @@ neofs_storage__ferm__dependent_rules:
     daddr: [ '{{ neofs_storage__control_address }}' ]
     saddr: '{{ neofs_storage__control_allow + neofs_storage__control_group_allow + neofs_storage__control_host_allow }}'
     protocol: 'tcp'
-    role: 'neofs-storage'
     rule_state: "{{ 'present' if neofs_storage__control_enabled else 'absent' }}"
