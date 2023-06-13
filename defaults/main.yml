@@ -3,7 +3,9 @@
 neofs_storage__version: '0.30.2'
 neofs_storage__bin_url: 'https://github.com/nspcc-dev/neofs-node/releases/download/v{{ neofs_storage__version }}/neofs-node-amd64'
 neofs_storage__cli_bin_url: 'https://github.com/nspcc-dev/neofs-node/releases/download/v{{ neofs_storage__version }}/neofs-cli-amd64'
+
 neofs_storage__docker_image: 'nspccdev/neofs-ir:{{ neofs_storage__version }}'
+neofs_storage__use_docker: False
 
 # Instance name to have multiple NeoFS nodes on the same host
 neofs_storage__instance: ''
@@ -168,10 +170,6 @@ neofs_storage__combined_config: '{{
   neofs_storage__group_config +
   neofs_storage__host_config }}'
 
-
-# Systemd unit may use docker compose to run NeoFS IR in container, instead of
-# local binary.
-neofs_storage__use_compose: False
 
 # Flag to skip binaries download
 neofs_storage__binaries_download: True

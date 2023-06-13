@@ -14,13 +14,3 @@
     home: '{{ neofs_storage__data_dir }}'
     system: yes
     skeleton: no
-
-- name: Get UID for NeoFS Storage user
-  ansible.builtin.getent:
-    database: passwd
-    key: '{{ neofs_storage__user }}'
-
-- name: Get GID for NeoFS Storage user
-  ansible.builtin.getent:
-    database: group
-    key: '{{ neofs_storage__group }}'
