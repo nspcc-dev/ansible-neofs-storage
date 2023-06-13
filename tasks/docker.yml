@@ -1,0 +1,21 @@
+---
+
+- name: Getting entries from NSS
+  ansible.builtin.getent:
+    database: passwd
+    key: '{{ neofs_storage__user }}'
+
+- name: Copy docker-compose file
+  ansible.builtin.template:
+    src: 'docker-compose.yml.j2'
+    dest: '{{ neofs_storage__conf_dir }}/docker-compose.yml'
+    owner: 'root'
+    group: '{{ neofs_storage__group }}'
+    mode: '0640'
+  notify: [ 'Restart NeoFS Storage' ]
+
+- name: Copy dockerized systemd unit
+  ansible.builtin.template:
+    src: 'neofs-storage_compose.service.j2'
+    dest: '/etc/systemd/system/neofs-storage{{ neofs_storage__instance }}.service'
+  notify: [ 'Restart NeoFS Storage' ]
