@@ -9,7 +9,6 @@
     group: 'root'
     mode: '0755'
   notify: [ 'Restart NeoFS Storage' ]
-  when: not (neofs_storage__use_docker | bool) and (neofs_storage__binaries_download | bool)
   register: download_result
   retries: 5
   delay: 5
