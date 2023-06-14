@@ -19,9 +19,14 @@
     mode: '0750'
 
 - ansible.builtin.include_tasks: binary.yml
+  when: not neofs_storage__use_docker|bool and neofs_storage__binaries_download|bool
+
 - ansible.builtin.include_tasks: cli.yml
+  when: neofs_storage__binaries_download|bool
+
 - ansible.builtin.include_tasks: wallet.yml
 - ansible.builtin.include_tasks: tls.yml
+  when: neofs_storage__grpc_endpoints | community.general.json_query('[? tls && enabled ]') | length
 
 - name: Copy NeoFS Storage config
   ansible.builtin.template:
@@ -37,10 +42,10 @@
     src: 'neofs-storage.service.j2'
     dest: '/etc/systemd/system/neofs-storage{{ neofs_storage__instance }}.service'
   notify: [ 'Restart NeoFS Storage' ]
-  when: not (neofs_storage__use_docker | bool)
+  when: not neofs_storage__use_docker|bool
 
 - ansible.builtin.include_tasks: docker.yml
-  when: neofs_ir__use_docker | bool
+  when: neofs_ir__use_docker|bool
 
 - ansible.builtin.include_tasks: healthcheck.yml
 
@@ -50,4 +55,4 @@
   vars:
     ferm__dependent_rules:
       - '{{ neofs_storage__ferm__dependent_rules }}'
-  when: neofs_storage__debops_ferm_import | bool
+  when: neofs_storage__debops_ferm_import|bool

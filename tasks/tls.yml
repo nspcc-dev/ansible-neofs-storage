@@ -1,26 +1,25 @@
 ---
 
-- name: Copy TLS key & certificate
-  block:
-    - name: Copy TLS key
-      ansible.builtin.copy:
-        src: '{{ item.tls_key }}'
-        dest: '{{ item.tls_key_file }}'
-        owner: 'root'
-        group: '{{ neofs_storage__group }}'
-        mode: '0640'
-      loop: "{{ neofs_storage__grpc_endpoints | community.general.json_query('[? tls && enabled]') }}"
-      loop_control:
-        label: '{{ item.tls_key_file }}'
-    - name: Copy TLS cert
-      ansible.builtin.copy:
-        src: '{{ item.tls_cert }}'
-        dest: '{{ item.tls_cert_file }}'
-        owner: 'root'
-        group: '{{ neofs_storage__group }}'
-        mode: '0640'
-      loop: "{{ neofs_storage__grpc_endpoints | community.general.json_query('[? tls && enabled]') }}"
-      loop_control:
-        label: '{{ item.tls_cert_file }}'
+- name: Copy TLS key
+  ansible.builtin.copy:
+    src: '{{ item.tls_key }}'
+    dest: '{{ item.tls_key_file }}'
+    owner: 'root'
+    group: '{{ neofs_storage__group }}'
+    mode: '0640'
+  loop: "{{ neofs_storage__grpc_endpoints | community.general.json_query('[? tls && enabled]') }}"
+  loop_control:
+    label: '{{ item.tls_key_file }}'
   notify: [ 'Restart NeoFS Storage' ]
-  when: neofs_storage__grpc_endpoints | community.general.json_query('[? tls && enabled ]') | length
+
+- name: Copy TLS cert
+  ansible.builtin.copy:
+    src: '{{ item.tls_cert }}'
+    dest: '{{ item.tls_cert_file }}'
+    owner: 'root'
+    group: '{{ neofs_storage__group }}'
+    mode: '0640'
+  loop: "{{ neofs_storage__grpc_endpoints | community.general.json_query('[? tls && enabled]') }}"
+  loop_control:
+    label: '{{ item.tls_cert_file }}'
+  notify: [ 'Restart NeoFS Storage' ]
