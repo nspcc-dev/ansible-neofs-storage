@@ -45,7 +45,7 @@
   when: not neofs_storage__use_docker|bool
 
 - ansible.builtin.include_tasks: docker.yml
-  when: neofs_ir__use_docker|bool
+  when: neofs_storage__use_docker|bool
 
 - ansible.builtin.include_tasks: healthcheck.yml
 
