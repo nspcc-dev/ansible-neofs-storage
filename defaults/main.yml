@@ -105,14 +105,7 @@ neofs_storage__raw_config:
   logger:
     level: info
   morph:
-    rpc_endpoint:
-      - 'wss://rpc1.morph.fs.neo.org:40341/ws'
-      - 'wss://rpc2.morph.fs.neo.org:40341/ws'
-      - 'wss://rpc3.morph.fs.neo.org:40341/ws'
-      - 'wss://rpc4.morph.fs.neo.org:40341/ws'
-      - 'wss://rpc5.morph.fs.neo.org:40341/ws'
-      - 'wss://rpc6.morph.fs.neo.org:40341/ws'
-      - 'wss://rpc7.morph.fs.neo.org:40341/ws'
+    endpoints: [ 'wss://rpc.morph.fs.neo.org:40341/ws' ]
   node:
     wallet:
       path: '{{ neofs_storage__wallet_path }}'
