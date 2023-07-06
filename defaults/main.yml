@@ -42,9 +42,9 @@ neofs_storage__tls_key: ''
 neofs_storage__tls_cert_file: '{{ neofs_storage__conf_dir }}/tls.cert'
 neofs_storage__tls_key_file: '{{ neofs_storage__conf_dir }}/tls.key'
 
-neofs_storage__control_enabled: False
+neofs_storage__control_enabled: True
 neofs_storage__control_address: 'localhost'
-neofs_storage__control_port: 8090
+neofs_storage__control_port: 8091
 neofs_storage__control_allow: []
 neofs_storage__control_group_allow: []
 neofs_storage__control_host_allow: []
