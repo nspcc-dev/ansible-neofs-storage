@@ -142,6 +142,11 @@ neofs_storage__raw_config:
     stream_timeout: 20s
 
 neofs_storage__default_config:
+  - options:
+      node:
+        attribute_0: 'UN-LOCODE:PA PAI'
+        attribute_1: 'Price:1'
+
   - enabled: '{{ neofs_storage__prometheus_enabled }}'
     options:
       prometheus:
