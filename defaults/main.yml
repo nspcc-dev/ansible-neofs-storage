@@ -21,6 +21,7 @@ neofs_storage__control_api_config_path: '{{ neofs_storage__conf_dir }}/control.y
 
 # Directory for databases and processing results
 neofs_storage__data_dir: '/srv/neofs{{ neofs_storage__instance }}'
+neofs_storage__meta_dir: '{{ neofs_storage__data_dir }}'
 
 neofs_storage__wallet_struct: ''
 neofs_storage__wallet_path: '{{ neofs_storage__conf_dir }}/wallet.json'
@@ -128,11 +129,14 @@ neofs_storage__raw_config:
     shard:
       0:
         metabase:
-          path: '{{ neofs_storage__data_dir}}/metabase.db'
-        blobstor:
-          path: '{{ neofs_storage__data_dir}}/data'
+          path: '{{ neofs_storage__meta_dir }}/metabase.db'
         writecache:
-          path: '{{ neofs_storage__data_dir}}/write_cache'
+          path: '{{ neofs_storage__meta_dir }}/write_cache'
+        blobstor:
+          - type: blobovnicza
+            path: '{{ neofs_storage__data_dir }}/data/blobovnicza'
+          - type: fstree
+            path: '{{ neofs_storage__data_dir }}/data'
   object:
     put:
       pool_size_remote: 100
