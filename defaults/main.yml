@@ -28,7 +28,7 @@ neofs_storage__wallet_address: ''
 neofs_storage__wallet_password: ''
 
 neofs_storage__morph_endpoints: []
-neofs_storage__announce_addresses: [ '{{ neofs_storage__grpc_address }}:{{ neofs_storage__grpc_port }}' ]
+neofs_storage__announce_addresses: [ '{{ neofs_storage__grpc_address | ansible.utils.ipwrap }}:{{ neofs_storage__grpc_port }}' ]
 
 neofs_storage__grpc_address: '0.0.0.0'
 neofs_storage__grpc_port: 8080
@@ -82,7 +82,7 @@ neofs_storage__grpc: |
   {% for endpoint in neofs_storage__grpc_endpoints %}
   {% if 'enabled' not in endpoint or endpoint.enabled %}
   {{ loop.index - 1 }}:
-    endpoint: {{ endpoint.address }}:{{ endpoint.port }}
+    endpoint: {{ endpoint.address | ansible.utils.ipwrap }}:{{ endpoint.port }}
   {% if 'tls' in endpoint and endpoint.tls %}
     tls:
       enabled: True
@@ -96,7 +96,7 @@ neofs_storage__grpc_ferm_rules: |
   {% for endpoint in neofs_storage__grpc_endpoints %}
   {% if 'enabled' not in endpoint or endpoint.enabled %}
   - dport: [ '{{ endpoint.port }}' ]
-    daddr: [ "{{ (endpoint.address != '0.0.0.0') | ternary(endpoint.address, '0.0.0.0/0') }}" ]
+    daddr: [ "{{ endpoint.address }}{{ '/0' if endpoint.address in ['0.0.0.0', '::0', '::'] }}" ]
     saddr: {{ endpoint.allow }}
     protocol: 'tcp'
   {% endif %}
@@ -123,7 +123,7 @@ neofs_storage__raw_config:
   grpc: '{{ neofs_storage__grpc | from_yaml }}'
   control:
     grpc:
-      endpoint: '{{ neofs_storage__control_address }}:{{ neofs_storage__control_port }}'
+      endpoint: '{{ neofs_storage__control_address | ansible.utils.ipwrap }}:{{ neofs_storage__control_port }}'
   storage:
     shard:
       0:
@@ -146,13 +146,13 @@ neofs_storage__default_config:
     options:
       prometheus:
         enabled: True
-        address: '{{ neofs_storage__prometheus_address }}:{{ neofs_storage__prometheus_port }}'
+        address: '{{ neofs_storage__prometheus_address | ansible.utils.ipwrap }}:{{ neofs_storage__prometheus_port }}'
 
   - enabled: '{{ neofs_storage__pprof_enabled }}'
     options:
       pprof:
         enabled: True
-        address: '{{ neofs_storage__pprof_address }}:{{ neofs_storage__pprof_port }}'
+        address: '{{ neofs_storage__pprof_address | ansible.utils.ipwrap }}:{{ neofs_storage__pprof_port }}'
 
 neofs_storage__config: []
 neofs_storage__group_config: []
@@ -183,7 +183,7 @@ neofs_storage__ferm__dependent_rules:
   - type: 'accept'
     name: 'neofs-storage{{ neofs_storage__instance }}_prometheus'
     dport: [ '{{ neofs_storage__prometheus_port }}' ]
-    daddr: [ '{{ neofs_storage__prometheus_address }}' ]
+    daddr: [ "{{ neofs_storage__prometheus_address }}{{ '/0' if neofs_storage__prometheus_address in ['0.0.0.0', '::0', '::'] }}" ]
     saddr: '{{ neofs_storage__prometheus_allow + neofs_storage__prometheus_group_allow + neofs_storage__prometheus_host_allow }}'
     protocol: 'tcp'
     rule_state: "{{ 'present' if neofs_storage__prometheus_enabled else 'absent' }}"
@@ -191,7 +191,7 @@ neofs_storage__ferm__dependent_rules:
   - type: 'accept'
     name: 'neofs-storage{{ neofs_storage__instance }}_pprof'
     dport: [ '{{ neofs_storage__pprof_port }}' ]
-    daddr: [ '{{ neofs_storage__pprof_address }}' ]
+    daddr: [ "{{ neofs_storage__pprof_address }}{{ '/0' if neofs_storage__pprof_address in ['0.0.0.0', '::0', '::'] }}" ]
     saddr: '{{ neofs_storage__pprof_allow + neofs_storage__pprof_group_allow + neofs_storage__pprof_host_allow }}'
     protocol: 'tcp'
     rule_state: "{{ 'present' if neofs_storage__pprof_enabled else 'absent' }}"
@@ -199,7 +199,7 @@ neofs_storage__ferm__dependent_rules:
   - type: 'accept'
     name: 'neofs-storage{{ neofs_storage__instance }}_control'
     dport: [ '{{ neofs_storage__control_port }}' ]
-    daddr: [ '{{ neofs_storage__control_address }}' ]
+    daddr: [ "{{ neofs_storage__control_address }}{{ '/0' if neofs_storage__control_address in ['0.0.0.0', '::0', '::'] }}" ]
     saddr: '{{ neofs_storage__control_allow + neofs_storage__control_group_allow + neofs_storage__control_host_allow }}'
     protocol: 'tcp'
     rule_state: "{{ 'present' if neofs_storage__control_enabled else 'absent' }}"
