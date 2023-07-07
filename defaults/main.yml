@@ -147,7 +147,7 @@ neofs_storage__raw_config:
 neofs_storage__default_config:
   - options:
       node:
-        attribute_0: 'UN-LOCODE:PA PAI'
+        attribute_0: 'UN-LOCODE:FI HEL'
         attribute_1: 'Price:1'
 
   - enabled: '{{ neofs_storage__prometheus_enabled }}'
