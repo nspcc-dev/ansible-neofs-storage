@@ -30,7 +30,7 @@ neofs_storage__wallet_password: ''
 neofs_storage__morph_endpoints: []
 neofs_storage__announce_addresses: [ '{{ neofs_storage__grpc_address | ansible.utils.ipwrap }}:{{ neofs_storage__grpc_port }}' ]
 
-neofs_storage__grpc_address: '0.0.0.0'
+neofs_storage__grpc_address: '::'
 neofs_storage__grpc_port: 8080
 neofs_storage__grpcs_port: 8082
 neofs_storage__grpc_allow: []
