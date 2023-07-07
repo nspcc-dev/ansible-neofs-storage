@@ -81,7 +81,7 @@ neofs_storage__grpc_endpoints:
 neofs_storage__grpc: |
   {% for endpoint in neofs_storage__grpc_endpoints %}
   {% if 'enabled' not in endpoint or endpoint.enabled %}
-  {{ loop.index - 1 }}:
+  {{ loop.index0 }}:
     endpoint: '{{ endpoint.address | ansible.utils.ipwrap }}:{{ endpoint.port }}'
   {% if 'tls' in endpoint and endpoint.tls %}
     tls:
