@@ -23,6 +23,9 @@ neofs_storage__control_api_config_path: '{{ neofs_storage__conf_dir }}/control.y
 neofs_storage__data_dir: '/srv/neofs{{ neofs_storage__instance }}'
 neofs_storage__meta_dir: '{{ neofs_storage__data_dir }}'
 
+neofs_storage__data_parts: 1
+neofs_storage__meta_parts: 1
+
 neofs_storage__wallet_struct: ''
 neofs_storage__wallet_path: '{{ neofs_storage__conf_dir }}/wallet.json'
 neofs_storage__wallet_address: ''
@@ -125,26 +128,48 @@ neofs_storage__raw_config:
   control:
     grpc:
       endpoint: '{{ neofs_storage__control_address | ansible.utils.ipwrap }}:{{ neofs_storage__control_port }}'
-  storage:
-    shard:
-      0:
-        metabase:
-          path: '{{ neofs_storage__meta_dir }}/metabase.db'
-        writecache:
-          path: '{{ neofs_storage__meta_dir }}/write_cache'
-        blobstor:
-          - type: blobovnicza
-            path: '{{ neofs_storage__data_dir }}/data/blobovnicza'
-          - type: fstree
-            path: '{{ neofs_storage__data_dir }}/data'
   object:
     put:
       pool_size_remote: 100
   apiclient:
     dial_timeout: 15s
     stream_timeout: 20s
+  storage:
+
+neofs_storage__datas_raw: |
+  {% for d in range(0, neofs_storage__data_parts) %}
+  - '{{ neofs_storage__data_dir }}{{ "/data" }}{{ d if not neofs_storage__data_parts == 1 }}'
+  {% endfor %}
+
+neofs_storage__datas: '{{ neofs_storage__datas_raw | from_yaml }}'
+
+neofs_storage__metas_raw: |
+  {% for m in range(0, neofs_storage__meta_parts) %}
+  - '{{ neofs_storage__meta_dir }}{{ "/meta" }}{{ m if not neofs_storage__meta_parts == 1 }}'
+  {% endfor %}
+
+neofs_storage__metas: '{{ neofs_storage__metas_raw | from_yaml }}'
+
+neofs_storage__shards: |
+  {% for data in neofs_storage__datas %}
+  {{ loop.index0 }}:
+    metabase:
+      path: '{{ neofs_storage__metas[ loop.index0 // (neofs_storage__datas|length // neofs_storage__metas|length) ] }}/metabase{{ loop.index0 if not neofs_storage__datas|length == neofs_storage__metas|length }}.db'
+    writecache:
+      path: '{{ neofs_storage__metas[ loop.index0 // (neofs_storage__datas|length // neofs_storage__metas|length) ] }}/writecache{{ loop.index0 if not neofs_storage__datas|length == neofs_storage__metas|length }}'
+    blobstor:
+      - type: blobovnicza
+        path: '{{ data }}/blobovnicza'
+      - type: fstree
+        path: '{{ data }}/tree'
+  {% endfor %}
+
 
 neofs_storage__default_config:
+  - options:
+      storage:
+        shard: '{{ neofs_storage__shards | from_yaml }}'
+
   - options:
       node:
         attribute_0: 'UN-LOCODE:FI HEL'
