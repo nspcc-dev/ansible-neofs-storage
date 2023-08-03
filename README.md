@@ -6,6 +6,8 @@ This role deploys [Storage node][neofs-node] for [NeoFS][neofs].
 [neofs-node]: https://github.com/nspcc-dev/neofs-node
 [neofs]:      https://fs.neo.org
 
+This repo is obsolete as this role is now a part of the [neofs](https://github.com/nspcc-dev/ansible-neofs) collection.
+
 ### NeoFS Storage Compatibility Table
 
 | NeoFS Node version | ansible-neofs-storage role version | min NeoFS Node supported version | max NeoFS Node compatible version |
